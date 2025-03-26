@@ -19,7 +19,10 @@ def outcsv(kokukoushi, fname, i, sh_name, fp):
             #print(kokukoushi, sh_name, row[1], row[2], row[3], row[4], row[5])
 
 if __name__ == '__main__':
-    // https://www.mext.go.jp/a_menu/koutou/ichiran/mext_00026.html
+    '''
+    Excelファイルは次の文部科学省のサイトよからダウンロード
+    https://www.mext.go.jp/a_menu/koutou/ichiran/mext_00026.html
+    '''
     path = './'
     kokukoushi = ['国立', '公立', '私立']
     shiritsu = '20240607_mxt_daigakuc01_000036190_03-'    #+'1.xlsx'
