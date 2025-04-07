@@ -184,8 +184,6 @@ class EightQueen:
                             if nth2 not in removelist:
                                 removelist.append(nth2)
                                 break
-                    else:
-                        continue
                 else:
                     continue
         return self.remove_from_sampleset(sampleset, removelist)
