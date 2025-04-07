@@ -197,13 +197,13 @@ class EightQueen:
 
     def variable_mat(self, sset):
         sets = []
-        set = self.gen_mat(sset)  # Convert to matrix form
-        set1 = rotate90(set)    # rotate 90
+        set0 = self.gen_mat(sset)  # Convert to matrix form
+        set1 = rotate90(set0)    # rotate 90
         set2 = rotate90(set1)   # rotate 180
         set3 = rotate90(set2)   # rotate 270
         set4 = np.fliplr(np.array(set)).copy().tolist()
         set5 = np.flipud(np.array(set)).copy().tolist()
-        sets = [set, set1, set2, set3, set4, set5]
+        sets = [set0, set1, set2, set3, set4, set5]
         return sets
 
     def check(self, sampleset):
