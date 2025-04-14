@@ -1,0 +1,652 @@
+% latex uft-8
+\documentclass[uplatex,dvipdfmx,a4paper,11pt,oneside,openany]{jsbook}
+%
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{bm}
+\usepackage{physics}
+\usepackage{graphicx}
+\usepackage{ascmac}
+\usepackage{amsmath}
+\usepackage{setspace}
+\usepackage{here}
+\usepackage{fancybox}
+\usepackage{url}
+\usepackage{listings,jlisting} %日本語のコメントアウトをする場合jlistingが必要
+\usepackage{xcolor}
+\usepackage{comment}
+\usepackage{multicol}
+\usepackage{amsmath, amssymb}
+\usepackage{type1cm}
+\usepackage{fancybox}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+%\begin{comment}
+\lstset{
+  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}; should come as last argument
+  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  deletekeywords={...},            % if you want to delete keywords from the given language
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  firstnumber=1000,                % start line enumeration with line 1000
+  frame=single,	                   % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  language=Octave,                 % the language of the code
+  morekeywords={*,...},            % if you want to add more keywords to the set
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  stepnumber=2,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=2,	                   % sets default tabsize to 2 spaces
+  title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+%\end{comment}
+
+\lstdefinelanguage{mypy}{
+  % リテラルと演算記号
+  morekeywords=[1]{+=,=,==,!=,!,>,<,>=,<=,++,-,+,*,\%,/},
+  % 予約語
+  morekeywords=[2]{False,None,True,and,as,assert,async,await,break,
+    class,continue,def,del,elif,else,except,finally,for,from,global,
+    if,import,in,is,lambda,nonlocal,not,or,pass,raise,return,try,while,
+    with,yield,print,match,case
+  },
+  % 識別子
+  morekeywords=[3]{defined_func},
+  % 区切り文字を強制的に色付け
+  literate=*{.}{{\color{delimiter}.}}1
+            {,}{{\color{delimiter},}}1 {:}{{\color{delimiter}:}}1
+            {)}{{\color{delimiter})}}1 {(}{{\color{delimiter}(}}1
+            {[}{{\color{delimiter}[}}1 {]}{{\color{delimiter}]}}1
+            {\{}{{\color{delimiter}\{}}1 {\}}{{\color{delimiter}\}}}1,
+  % 大文字小文字を区別
+  sensitive=true,
+  % 行コメントの設定
+  morecomment=[l]{\#},
+  % Stringリテラルの設定
+  morestring=[b]{\'},
+  morestring=[b]{\"},
+  % 単語として扱う文字
+  alsoletter={\%<>=+-*\/1234567890!},
+  % 枠
+  frame=none,
+  % 長くなったら途中で改行
+  breaklines=true,
+  % 自動改行時のインデント
+  breakindent=12pt,
+  % 文字間隔を一定に
+  columns=fixed,
+  % 文字の横のサイズを小さく
+  basewidth=0.5em,
+  % 行番号を左に
+  numbers=left,
+  % 行番号の書式
+  numberstyle={\scriptsize\color{white}},
+  % 行番号の増加数は1=連番に
+  stepnumber=1,
+  % フレームの左の余白
+  framexleftmargin=18pt,
+  % スペースを省略せず保持
+  keepspaces=true,
+  % インデントサイズ
+  tabsize=4,
+  backgroundcolor={},                                   % 背景色=透明
+  basicstyle={\small\ttfamily\color{white}},            % 通常部分の書式
+  identifierstyle={\small\color{white}},                % 識別子の書式
+  commentstyle={\small\color{comment}},                 % コメントの書式
+  keywordstyle=[1]{\small\bfseries\color{literal}},     % リテラルと演算記号の書式
+  keywordstyle=[2]{\small\bfseries\color{reserved}},    % 予約語の書式
+  keywordstyle=[3]{\small\bfseries\color{identifier}},  % 自分で定義した識別子の書式
+  stringstyle={\small\ttfamily\color{literal}},         % 文字列の書式
+}
+%ここからソースコードの表示に関する設定
+\lstdefinestyle{customc}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  numbers=left,
+  frame=single,
+  xleftmargin=\parindent,
+  language=C,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{green!40!black},
+  commentstyle=\itshape\color{purple!40!black},
+  identifierstyle=\color{blue},
+  stringstyle=\color{orange},
+}
+
+\lstdefinestyle{custompy}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  numbers=none,
+  frame=l,
+  xleftmargin=\parindent,
+  language=python,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{green!40!black},
+  commentstyle=\itshape\color{purple!40!black},
+  identifierstyle=\color{blue},
+  stringstyle=\color{orange},
+}
+
+\lstdefinestyle{customasm}{
+  belowcaptionskip=1\baselineskip,
+  frame=L,
+  xleftmargin=\parindent,
+  language=[x86masm]Assembler,
+  basicstyle=\footnotesize\ttfamily,
+  commentstyle=\itshape\color{purple!40!black},
+}
+
+\lstset{escapechar=@,style=custompy}
+\renewcommand{\lstlistingname}{プログラム}
+
+\begin{comment}
+\makeatletter
+\def\ps@plainfoot{%
+  \let\@mkboth\@gobbletwo
+  \let\@oddhead\@empty
+  \def\@oddfoot{\normalfont\hfil-- \thepage\ --\hfil}%
+  \let\@evenhead\@empty
+  \let\@evenfoot\@oddfoot}
+  \let\ps@plain\ps@plainfoot
+  \renewcommand{\chapter}{%
+  \if@openright\cleardoublepage\else\clearpage\fi
+  \global\@topnum\z@
+  \secdef\@chapter\@schapter}
+\makeatother
+\end{comment}
+
+%
+\newcommand{\maru}[1]{{\ooalign{%
+\hfil\hbox{$\bigcirc$}\hfil\crcr%
+\hfil\hbox{#1}\hfil}}}
+%
+\setlength{\textwidth}{\fullwidth}
+\setlength{\textheight}{40\baselineskip}
+\addtolength{\textheight}{\topskip}
+\setlength{\voffset}{-0.55in}
+%
+\makeatletter
+\newenvironment{tablehere}
+  {\def\@captype{table}}
+  {}
+\newenvironment{figurehere}
+  {\def\@captype{figure}}
+  {}
+\makeatother
+
+%
+\begin{document}
+\chapter{ナップザック問題を量子アニーリングで解く}
+
+\section{問題}
+
+それぞれに価値$v$とコスト（例えば体積）$c$が設定されている$N$個の荷物がある。
+あるナップザックに、それらから荷物を選んで詰めて運ぼうとしている。
+運ぶ荷物の価値の総和ができるだけ大きくになる様に荷物を選びたいが、ナップザックには許容される容量に限度があり、その値は$C$である。この決められたコストを上回らない様に、選んだ荷物の価値合計を最大化する様な荷物の選び方を決める問題である。
+
+$N$個の荷物にインデックス$\alpha=1,2,\cdots,N$をつける。
+ナップザックに入れる荷物に対応する変数には1を、入れない荷物には0を割り当てる事にすると、この問題は以下の様に書ける。
+
+\begin{eqnarray}
+  max \hspace{5mm} \sum_{\alpha=1}^N v_{\alpha}q_{\alpha} \hspace{1cm} s.t. \hspace{5mm} \sum_{\alpha=1}^N c_{\alpha}q_{\alpha} \leq C
+\end{eqnarray}
+
+\section{定式化（その1）}
+
+イジングモデルのハミルトニアン$H$は、選択した荷物の価値合計を最大化する項$H_{value}$と、コストを$C$以下になる様にする制約事項の項$H_{cost}$の2つからなっている。
+\begin{eqnarray}
+  H = H_{value} + H_{cost}
+\end{eqnarray}
+
+$H_{value}$は次の通り
+\begin{eqnarray}
+  H_{value}=-\sum_\alpha^Nv_\alpha q_\alpha\;,\hspace{10mm}q_\alpha\in\{0,1\}
+\end{eqnarray}
+
+価値の合計が最大の時に、$H_{value}$は最小値をとる。
+
+一方、制約条件の項だが、選んだ荷物のコスト（各体積）の合計$\sum_\alpha c_\alpha q_\alpha$が、ナップザックの最大許容体積である$C$と等しいとする制約条件ならば、次の様になる
+\begin{eqnarray}
+  H_{cost} = \lambda\left(C-\sum_{\alpha=1}^N c_\alpha q_\alpha\right)^2
+\end{eqnarray}
+ここで、パラメータ$\lambda$は正の定数である。
+
+この制約条件を展開する
+\begin{eqnarray*}
+  H_{cost} = \lambda\bigg(C - \sum_\alpha c_\alpha q_\alpha\bigg)^2
+  &=&\lambda\bigg(C^2 - 2C\sum_\alpha c_\alpha q_\alpha + \bigg(\sum_\alpha c_\alpha q_\alpha\bigg)^2\bigg)\\
+  &=&\lambda\bigg(-2C\sum_{\alpha=1}^Nc_\alpha q_\alpha + \sum_{\alpha=1}^Nc_\alpha^2 q_\alpha^2 + 2\sum_{\alpha_1<\alpha_2}c_{\alpha_1}c_{\alpha_2}q_{\alpha_1}q_{\alpha_2}\bigg)\\
+  &=&\lambda\bigg(\sum_{\alpha=1}^Nc_\alpha(c_\alpha-2C)q_\alpha + 2\sum_{\alpha_1<\alpha_2}c_{\alpha_1}c_{\alpha_2}q_{\alpha_1}q_{\alpha_2}\bigg)\\
+&=&\lambda\bigg(\sum_{\alpha=1}^Nc_\alpha(c_\alpha-2C)q_\alpha+2\sum_{\alpha=1}^{N-1}\sum_{\beta=\alpha+1}^Nc_\alpha c_\beta q_\alpha q_\beta\bigg)
+\end{eqnarray*}
+
+\begin{screen}
+式の変形にあたっては、以下の性質を利用している.
+\[
+\left(\sum_i a_i x_i\right)^2=\sum_i a_i^2 x_i^2 + 2\sum_{i<j}a_i a_j x_i x_j
+\]
+また, バイナリ変数に対する $s_k^2=s_k,\;\; s_k \in \{0, 1\}$ の性質も使っている。
+\end{screen}
+
+こうして、この問題のハミルトニアン$H$は、$\lambda_1$と$\lambda_2$を正の定数として、次の様に書ける。
+\begin{eqnarray*}
+  H = H_{cost} + H_{value} = \lambda_1\bigg(\sum_{\alpha=1}^Nc_\alpha(c_\alpha-2C)q_\alpha+2\sum_{\alpha=1}^{N-1}\sum_{\beta=\alpha+1}^Nc_\alpha c_\beta q_\alpha q_\beta\bigg) - \lambda_2\sum_\alpha^Nv_\alpha q_\alpha
+\end{eqnarray*}
+
+\subsection{実装}
+
+具体的な問題を解いてみる。
+下表の通り、$A,B,C,D,E$の$N=5$個の荷物がある。それぞれの荷物の価値と体積は表の通りである。また、ナップザックの最大許容体積$C$は12である。\\
+
+\begin{tabular}{|l|ccccc|}\hline
+  荷物 & A & B & C & D & E \\\hline
+  インデックス($\alpha$) & 1 & 2 & 3 & 4 & 5 \\\hline
+  体積($c_\alpha$) & 3 & 4 & 6 & 1 & 5 \\\hline
+  価値($v_\alpha$) & 6 & 7 & 8 & 1 & 4 \\\hline
+\end{tabular}\\
+
+プログラムのコードに落としてみると次の通り
+
+\begin{lstlisting}[language=Python]
+from openjij import SASampler, SQASampler
+from collections import defaultdict, Counter
+
+class MODEL1:
+    def __init__(self):
+        self.N = 5
+        self.C = 12.0
+        self.c = [3.0, 4.0, 6.0, 1.0, 5.0]
+        self.v = [6.0, 7.0, 8.0, 1.0, 4.0]
+        self.L1 = 1.0
+        self.L2 = self.L1 / 9.0
+        #self.Q = defaultdict(lambda: 0.0)
+        Samplers = [SASampler, SQASampler]
+        self.sampler = Samplers[1]()
+
+    def cost(self, Q):
+        for a in range(self.N):
+            Q[(a, a)] += self.L1 * self.c[a] * (self.c[a] - 2.0 * self.C)
+        for a in range(self.N - 1):
+            for b in range(a + 1, self.N):
+                Q[(a, b)] += 2.0 * self.L1 * self.c[a] * self.c[b]
+
+    def value(self, Q):
+        for a in range(self.N):
+            Q[(a, a)] -= self.L2 * self.v[a]
+
+    def hamiltonian(self, Q):
+        self.cost(Q)
+        self.value(Q)
+
+    def print_QUBO(self, Q):
+        # Print QUBO matrix (for debugging)
+        for i in range(self.N):
+            for j in range(self.N):
+                print("{:7.1f}".format(Q[(i, j)]), end=" ")
+            print()
+
+    def sample(self, Q, num_reads=100):
+        # Perform sampling
+        sampleset = self.sampler.sample_qubo(Q, num_reads=num_reads)
+        return sampleset
+
+    def evaluate(self, sampleset):
+        # Extract sample solutions, energies, and sort them by frequency
+        samples = sampleset.record['sample']
+        energies = sampleset.record['energy']
+        # Combine solutions and corresponding energies
+        sample_data = [(tuple(sample), energy) for sample, energy in zip(samples, energies)]
+        # Sort the results by appearance frequency and then energy
+        sample_frequency = Counter(sample for sample, _ in sample_data)
+        # Print sorted results by frequency and include energy
+        print("\nSorted samples by frequency and energy:")
+        for solution, freq in sample_frequency.most_common():
+            energy = next(energy for sample, energy in sample_data if sample == solution)
+            print(f"Sample: {solution}, Frequency: {freq}, Energy: {energy:+.2f}")
+        # Evaluate each solution
+        print("\nEvaluation of solutions:")
+        for nth, (solution, freq) in enumerate(sample_frequency.most_common(), 1):
+            value = volume = 0.0
+            for i, bit in enumerate(solution[:self.N]):  # Consider only the first N bits for w and c
+                if bit == 1:
+                    volume += self.c[i]
+                    value += self.v[i]
+            if volume <= self.C:
+                energy = next(energy for sample, energy in sample_data if sample == solution)
+                print(f"[{nth:2d}] Frequency={freq}, Energy={energy:+.2f},\n Solution={solution}", end="\t")
+                print(f": value={value:4.1f}, cost={volume:4.1f}")
+
+if __name__ == "__main__":
+    model = MODEL1()
+    Q = defaultdict(lambda: 0.0)
+    model.hamiltonian(Q)
+    model.print_QUBO(Q)
+    sampleset = model.sample(Q, num_reads=100)
+    model.evaluate(sampleset)
+\end{lstlisting}
+
+プログラムを実行させた結果
+
+\begin{verbatim}
+  -62.3    24.0    36.0     6.0    30.0
+    0.0   -79.2    48.0     8.0    40.0
+    0.0     0.0  -107.1    12.0    60.0
+    0.0     0.0     0.0   -22.9    10.0
+    0.0     0.0     0.0     0.0   -94.6
+
+Sorted samples by frequency and energy:
+Sample: (0, 0, 1, 1, 1), Frequency: 57, Energy: -142.56
+Sample: (1, 1, 0, 0, 1), Frequency: 31, Energy: -142.11
+Sample: (0, 1, 1, 1, 0), Frequency: 6, Energy: -141.22
+Sample: (1, 1, 1, 0, 0), Frequency: 4, Energy: -140.67
+Sample: (0, 0, 1, 0, 1), Frequency: 1, Energy: -141.67
+Sample: (1, 1, 0, 1, 1), Frequency: 1, Energy: -141.00
+
+Evaluation of solutions:
+[ 1] Frequency=57, Energy=-142.56,
+ Solution=(0, 0, 1, 1, 1)	: value=13.0, cost=12.0
+[ 2] Frequency=31, Energy=-142.11,
+ Solution=(1, 1, 0, 0, 1)	: value=17.0, cost=12.0
+[ 3] Frequency=6, Energy=-141.22,
+ Solution=(0, 1, 1, 1, 0)	: value=16.0, cost=11.0
+[ 5] Frequency=1, Energy=-141.67,
+ Solution=(0, 0, 1, 0, 1)	: value=12.0, cost=11.0
+
+プロセスは終了コード 0 で終了しました
+\end{verbatim}
+
+\section{定式化（その2）}
+
+しかし今の問題では、総体積は必ずしも$C$に等しい必要はなく、$C$より小さい総体積であっても、価値合計が大きいのであれば、そちらの方を最適解だと選ぶ事になる。従ってここでは「コストの合計値が$C$以下」になるとする制約条件が必要になる。そこで新たに補助変数（slack返送鵜と呼ばれる）$s_k \in \{0, 1\}, k=1,2,\dots,C$を用意して、次の通り定式化する。
+\begin{eqnarray}
+  H_{cost} = \lambda \left[\left(1-\sum_k s_k\right)^2+\left(\sum_k ks_k - \sum_\alpha c_\alpha q_\alpha\right)^2\right] = \lambda\left(H_{cost}^{(1)} + H_{cost}^{(2)}\right)
+\end{eqnarray}
+
+まずは$H_{cost}^{(1)}$を展開する.
+
+\begin{eqnarray*}
+H_{cost}^{(1)}&=&\left(1-\sum_k s_k\right)^2\\
+&=&1-2\sum_k s_k + \left(\sum_k s_k\right)^2\\
+&=&1-2\sum_k s_k + \left(\sum_k s_k^2 + 2\sum_{k<l}s_k s_l\right)\\
+&=&1-\sum_k s_k + 2\sum_{k<l}s_k s_l
+\end{eqnarray*}
+
+次に、$H_{cost}^{(2)}$を展開する.
+
+\begin{eqnarray*}
+  H_{cost} ^{(2)} &=& \left( \sum _{k} k s_{k} - \sum _{\alpha} c_{\alpha} q_{\alpha} \right) ^{2} \\
+  &=& \left( \sum _{k} k s_{k} \right) ^{2} + \left( \sum _{\alpha} c_{\alpha} q_{\alpha} \right) ^{2} - 2 \sum _{k} \sum _{\alpha} kc_{\alpha} s_{k} q_{\alpha} \\
+  &=& \left(\sum _{k} k^{2} s_{k} + 2\sum _{k < l} kls_{k}s_{l}\right) + \left(\sum _{\alpha} c_{\alpha} ^{2} q_{\alpha} + 2\sum _{\alpha < \beta} c_{\alpha} c_{\beta} q_{\alpha} q_{\beta}\right) - 2 \sum_{k} \sum _{\alpha} kc_{\alpha} s_{k} q_{\alpha}
+\end{eqnarray*}
+
+こうして、$H_{cost}=H_{cost}^{(1)}+H_{cost}^{(2)}$は、次の様になる。
+\begin{eqnarray*}
+  \frac{H_{cost}}{\lambda } = 1 + \sum _{k} (k^{2} - 1) s_{k} + 2\sum _{k < l} (kl + 1) s_{k}s_{l} + \sum _{\alpha} c_{\alpha} ^{2} q_{\alpha} + 2\sum _{\alpha < \beta} c_{\alpha} c_{\beta} q_{\alpha} q_{\beta} - 2 \sum_{k} \sum _{\alpha} kc_{\alpha} s_{k} q_{\alpha}
+\end{eqnarray*}
+
+
+ここで,$s_k$もQUBO変数の一種と見なす.すなわち,
+\[
+s_{k} \longrightarrow q_{\alpha}, \quad \alpha = k + N
+\]
+
+以上の様にすれば,ハミルトニアンは以下のようになる.
+
+\begin{eqnarray*}
+    \frac{H_{cost}}{\lambda} &=& 1 + \sum _{k=1} ^{C} (k^{2} - 1) q_{k + N} + \sum _{\alpha=1} ^{N} c_{\alpha} ^{2} q_{\alpha}\\
+    & +& 2\sum _{k=1} ^{C-1} \sum _{l=k+1}^{C} (kl + 1) q_{k+N}q_{l+N} + 2\sum _{\alpha = 1} ^{N-1} \sum _{\beta = \alpha + 1} ^{N} c_{\alpha} c_{\beta} q_{\alpha} q_{\beta} - 2 \sum_{k=1} ^{C} \sum _{\alpha=1} ^{N} kc_{\alpha} q_{k+N} q_{\alpha}
+\end{eqnarray*}
+
+\subsection{実装}
+
+$C$個のslack変数$s_1, \cdots, s_{C-1}, s_C$を導入して、その中の1つだけが1になることを許す（複数の1は禁止）を課している。\\
+
+\begin{tabular}{|l|c|c|c|c|c|c|c|}\hline
+  ナップザックの体積（$c$） & 1 & 2 & 3 & \dots & 10 & 11 & 12 \\\hline
+  総体積($c$)になるかどうか（$s_n$） & 0 & 0 & 0 & \dots & 0 & 0 & 1 \\\hline
+  $n\times s_n$ & 0 & 0 & 0 & \dots & 0 & 0 & 12 \\
+  & $1\times 0$ & $2\times 0$ & $3\times 0$ & \dots & $10\times 0$ & $11\times 0$ & $12\times 1$ \\\hline
+ \end{tabular}\\
+
+一方、ナップサックの荷物の体積の総和(荷物の総体積)は以下で求められる。
+
+\[
+c = \sum_{\alpha=1}^{N}c_\alpha q_\alpha = c_1 q_1 + c_2 q_2 + c_3 q_3 + \dots + c_N q_N
+\]
+
+$q_n$は$0,1$を取る決定変数で, $n$番目の荷物をナップサックに詰めるかどうかを決める変数なので, 例えば下表のように荷物$C,D,E$を選択すれば, 荷物の総体積（$3\times 0+4\times 0+6\times 1+1\times 1+5\times 1=12$）を12にすることができる.\\
+
+\begin{lstlisting}[language=Python]
+from knapsack import MODEL1
+
+class MODEL2(MODEL1):
+    def __init__(self):
+        super().__init__()
+        self.N = 5
+        self.C = 12.0
+        self.c = [3.0, 4.0, 6.0, 1.0, 5.0]
+        self.v = [6.0, 7.0, 8.0, 1.0, 4.0]
+        self.L1 = 1.0
+        self.L2 = self.L1 / 9.0
+        self.Q = defaultdict(lambda: 0.0)
+
+    def slack_unique(self, Q):
+        for k in range(self.C):
+            Q[(k+self.N, k+self.N)] -= self.L1
+        for k in range(self.C - 1):
+            for l in range(k + 1, self.C):
+                Q[(k+self.N, l+self.N)] += 2.0 * self.L1
+
+    def slack_sum(self, Q):
+        for k in range(self.C):
+            Q[(k+self.N, k+self.N)] += self.L1 * k**2
+        for k in range(self.C - 1):
+            for l in range(k + 1, self.C):
+                Q[(k+self.N, l+self.N)] += 2.0 * self.L1 * k * l
+        for a in range(self.N):
+            Q[(a, a)] += self.L1 * self.c[a] * self.c[a]
+        for a in range(self.N - 1):
+            for b in range(a + 1, self.N):
+                Q[(a, b)] += 2.0 * self.L1 * self.c[a] * self.c[b]
+        for a in range(self.N - 1):
+            for b in range(a + 1, self.N):
+                Q[(a, b)] += 2.0 * self.L1 * self.c[a] * self.c[b]
+        for k in range(self.C):
+            for a in range(self.N):
+                Q[(k+self.N, a)] -= 2.0 * self.L1 * k * self.c[a]
+
+    def cost(self, Q):
+        self.slack_unique(Q)
+        self.slack_sum(Q)
+
+    def hamiltonian(self, Q):
+        self.cost(Q)
+        self.value(Q)
+
+if __name__ == "__main__":
+    model = MODEL1()
+    Q = defaultdict(lambda: 0.0)
+    model.hamiltonian(Q)
+    model.print_QUBO(Q)
+    sampleset = model.sample(Q, num_reads=100)
+    model.evaluate(sampleset)
+\end{lstlisting}
+
+\begin{verbatim}
+-62.3    24.0    36.0     6.0    30.0
+  0.0   -79.2    48.0     8.0    40.0
+  0.0     0.0  -107.1    12.0    60.0
+  0.0     0.0     0.0   -22.9    10.0
+  0.0     0.0     0.0     0.0   -94.6
+
+Sorted samples by frequency and energy:
+Sample: (0, 0, 1, 1, 1), Frequency: 66, Energy: -142.56
+Sample: (1, 1, 0, 0, 1), Frequency: 25, Energy: -142.11
+Sample: (0, 1, 1, 1, 0), Frequency: 6, Energy: -141.22
+Sample: (1, 1, 1, 0, 0), Frequency: 3, Energy: -140.67
+
+Evaluation of solutions:
+[ 1] Frequency=66, Energy=-142.56,
+Solution=(0, 0, 1, 1, 1)	: value=13.0, cost=12.0
+[ 2] Frequency=25, Energy=-142.11,
+Solution=(1, 1, 0, 0, 1)	: value=17.0, cost=12.0
+[ 3] Frequency=6, Energy=-141.22,
+Solution=(0, 1, 1, 1, 0)	: value=16.0, cost=11.0
+
+プロセスは終了コード 0 で終了しました
+\end{verbatim}
+
+\section{定式化（その3）}
+
+slack変数は、決定変数$q_\alpha$の後ろに繋げて解く事になるので、不等式の制約条件によっては、slack変数の数が多くなるという不都合がある。そこで、slack変数のバイナリエンコーディングを行うことがある。今のナップザックぬ問題の具体例では、ナップザックの最大容量$C$が12だとしているので、前の例の様なslack変数の使い方だと、$s_1, s_2,\cdots,s_{C-1}, s_C$と、全部で$C=12$個のslack変数を追加していることになる。一方バイナリーエンコーディングでは、例えば12なら、次の表の様な2進数の4桁で表現できるので、4個のslack変数を用意すれば良い事になる。\\
+\[
+12 = (2^0 \times 0) + (2^1 \times 0) + (2^2 \times 1) + (2^3 \times 1) \rightarrow \sum_{n=0}^3 (2^n \times s_n)
+\]\\
+
+\begin{tabular}{|c|c|c|c|c|}\hline
+  s3&s2&s1&s0&値\\\hline
+  0&0&0&0& 0\\
+  0&0&0&1& 1\\
+  0&0&1&0& 2\\
+  0&0&1&1& 3\\
+  0&1&0&0& 4\\
+  0&1&0&1& 5\\
+  0&1&1&0& 6\\
+  0&1&1&1& 7\\
+  1&0&0&0& 8\\
+  1&0&0&1& 9\\
+  1&0&1&0& 10\\
+  1&0&1&1& 11\\
+  1&1&0&0& 12\\\hline
+  1&1&0&1& 13\\
+  1&1&1&0& 14\\
+  1&1&1&1& 15\\\hline
+\end{tabular}\\
+
+※ ただし、この4ビットの2進符号化は、結局のところ「15以下」のいずれの場合も許容されるので、「12以下」の制約にするには更なる工夫が必要になる。ここでは、「15以下」のやり方を示すにとどめる。
+
+前の例で実施した、バイナリーエンコーディングなしの、通常のslack変数の場合のハミルトニアンは、
+\[
+  H\;=\;H_A\;+\;H_B
+  =\;A_1\bigg(1-\sum_{n=1}^{12}s_n\bigg)^2 + A_2\bigg(\sum_{n=1}^{12}n s_n- \sum_{\alpha=1}^{5}c_\alpha q_\alpha\bigg)^2 - B\sum_{\alpha=1}^{5}v_\alpha q_\alpha
+\]
+この様にしていたが、今回はまず$A_1$のかかる項はなくなる。（slack変数の選択は1つだけではなくなるから）
+そして、$A_2$のかかる項では、2進符号化($2^0 s_0 + 2^1 s_1 + 2^2 s_2 + 2^3 s_n=\sum_{n=0}^3 2^n s_n$)をしなければいけないから、
+\[
+  H\;=\;H_A\;+\;H_B
+  =A_2\bigg(\sum_{n=0}^{3}2^n s_n- \sum_{\alpha=1}^{5}c_\alpha q_\alpha\bigg)^2 - B\sum_{\alpha=1}^{5}v_\alpha q_\alpha
+\]
+4ビットで2進符号化している（0、1、2、3=M）ことから$M=3$とし, 荷物の数を$N=5$として式を変形していく。
+
+\begin{eqnarray*}
+  H\;&=&\;H_A\;+\;H_B\\
+  &=&A_2\bigg(\sum_{n=0}^{3}2^n s_n- \sum_{\alpha=1}^{5}c_\alpha q_\alpha\bigg)^2 - B\sum_{\alpha=1}^{5}v_\alpha q_\alpha\\
+&=&\;A_2\bigg(\sum_{n=0}^{M}2^n s_n - \sum_{\alpha=1}^{N}c_\alpha q_\alpha\bigg)^2 - B\sum_{\alpha=1}^{N}v_\alpha q_\alpha\\
+&=&A_2\bigg(\sum_{n=0}^{M}2^n s_n\bigg)^2 + A_2\bigg(\sum_{\alpha=1}^{N}c_\alpha q_\alpha\bigg)^2 - 2A_2\bigg(\sum_{n=0}^{M}\sum_{\alpha=1}^{N}2^n s_n c_\alpha q_\alpha\bigg) - B\sum_{\alpha=1}^{N}v_\alpha q_\alpha\\
+&=&A_2\bigg(\sum_{n=0}^M2^{2n}s_n^2 + 2\sum_{n_1<n_2}2^{n_1}2^{n_2}s_{n_1}s_{n_2}\bigg) + A_2\bigg(\sum_{\alpha=1}^Nc_\alpha^2q_\alpha^2 + 2\sum_{\alpha_1<\alpha_2}c_{\alpha_1} c_{\alpha_2} q_{\alpha_1} q_{\alpha_2}\bigg)\\
+&-& 2A_2\bigg(\sum_{n=0}^{M}\sum_{\alpha=1}^{N}2^n s_n c_\alpha q_\alpha\bigg) - B\sum_{\alpha=1}^{N}v_\alpha q_\alpha\\
+&=&2A_2\bigg(\sum_{n_1<n_2}2^{n_1}2^{n_2}s_{n_1}s_{n_2} + \sum_{\alpha_1<\alpha_2}c_{\alpha_1} c_{\alpha_2} q_{\alpha_1} q_{\alpha_2} - \sum_{n=0}^{M}\sum_{\alpha=1}^{N}2^n s_n c_\alpha q_\alpha\bigg)\\
+&+& A_2\bigg(\sum_{\alpha=1}^Nc_\alpha^2q_\alpha + \sum_{n=0}^M2^{2n}s_n\bigg) - B\sum_{\alpha=1}^{N}v_\alpha q_\alpha\\
+&=&2A_2\bigg(\sum_{n_1=0}^{M-1}\sum_{n_2=n_1+1}^{M}2^{n_1}2^{n_2}s_{n_1+N}s_{n_2+N} + \sum_{\alpha=1}^{N-1}\sum_{\beta=\alpha+1}^N c_\alpha c_\beta q_\alpha q_\beta - \sum_{n=0}^M\sum_{\alpha=1}^N 2^n s_{n+N}c_\alpha q_\alpha \bigg)\\
+&+& A_2\bigg(\sum_{\alpha=1}^N c_\alpha^2 q_\alpha + \sum_{n=0}^M 2^{2n}s_{n+1+N}\bigg) - B\sum_{\alpha=1}^N v_\alpha q_\alpha\\
+&=&2A\bigg(\sum_{n_1=0}^{M-1}\sum_{n_2=n_1+1}^{M}2^{n_1}2^{n_2}q_{n_1+N}q_{n_2+N} + \sum_{\alpha=1}^{N-1}\sum_{\beta=\alpha+1}^N c_\alpha c_\beta q_\alpha q_\beta - \sum_{n=0}^M\sum_{\alpha=1}^N 2^n q_{n+N}c_\alpha q_\alpha \bigg)\\
+&+& A\bigg(\sum_{\alpha=1}^N c_\alpha^2 q_\alpha + \sum_{n=0}^M 2^{2n}q_{n+N}\bigg) - B\sum_{\alpha=1}^N v_\alpha q_\alpha\\
+\end{eqnarray*}
+
+終わりの式の変形では、slack変数$s_0, s_1, s_2, s_3$のそれぞれが、N個の決定変数$q$の並びの後ろに、$q_{0+N}, q_{1+N}, q_{2+N}, q_{3+N}$の4個が繋がって来ることを意識して変形させているので要注意！（$A_2$は$A$とした）
+\begin{eqnarray*}
+s_0&\rightarrow& s_{0+N}\rightarrow q_{0+N},\\
+s_1&\rightarrow& s_{1+N}\rightarrow q_{1+N},\\
+s_2&\rightarrow& s_{2+N}\rightarrow q_{2+N},\\
+s_3&\rightarrow& s_{3+N}\rightarrow q_{3+N}
+\end{eqnarray*}
+また, この並びによって, LSBの$S_0$は左側に,MSBが右に並ぶことも確認しておく必要がある.
+
+\subsection{実装}
+
+\begin{lstlisting}[language=Python]
+from knapsack import MODEL1
+
+class MODEL3(MODEL1):
+    def __init__(self):
+        super().__init__()
+        self.N = 5
+        self.C = 12.0
+        self.M = 3
+        self.c = [3.0, 4.0, 6.0, 1.0, 5.0]
+        self.v = [6.0, 7.0, 8.0, 1.0, 4.0]
+        self.L1 = 1.0
+        self.L2 = self.L1 / 9.0
+        self.Q = defaultdict(lambda: 0.0)
+
+    def cost(self, Q):
+        for n1 in range(self.M):
+            for n2 in range(n1+1, self.M):
+                Q[(n1+self.N, n2+self.N)] += 2.0 * self.L1 * 2**n1 * 2**n2
+        for a in range(self.N - 1):
+            for b in range(a + 1, self.N):
+                Q[(a, b)] += 2.0 * self.L1 * self.c[a] * self.c[b]
+        for n in range(self.M+1):
+            for a in range(self.N):
+                Q[(n + self.N, a)] -= 2.0 * self.L1 * 2**n * self.c[a]
+        for a in range(self.N):
+            Q[(a, a)] += self.L1 * self.c[a] * self.c[a]
+        for n in range(self.M + 1):
+            Q[(n + self.N, n + self.N)] += self.L1 * 2**(2*n)
+
+    def hamiltonian(self, Q):
+        self.cost(Q)
+        self.value(Q)
+
+if __name__ == '__main__':
+    model = MODEL1()
+    Q = defaultdict(lambda: 0.0)
+    model.hamiltonian(Q)
+    model.print_QUBO(Q)
+    sampleset = model.sample(Q, num_reads=100)
+    model.evaluate(sampleset)
+\end{lstlisting}
+
+以下の結果の出力では、選ばれた荷物の容積の総和が12を超えるものは表示していない
+
+\begin{verbatim}
+-63.7    24.0    36.0     6.0    30.0
+  0.0   -80.8    48.0     8.0    40.0
+  0.0     0.0  -108.9    12.0    60.0
+  0.0     0.0     0.0   -23.1    10.0
+  0.0     0.0     0.0     0.0   -95.4
+
+Sorted samples by frequency and energy:
+Sample: (1, 1, 0, 0, 1), Frequency: 39, Energy: -145.89
+Sample: (0, 0, 1, 1, 1), Frequency: 30, Energy: -145.44
+Sample: (1, 1, 1, 0, 0), Frequency: 28, Energy: -145.33
+Sample: (0, 1, 1, 1, 0), Frequency: 3, Energy: -144.78
+
+Evaluation of solutions:
+[ 1] Frequency=39, Energy=-145.89,
+Solution=(1, 1, 0, 0, 1)	: value=17.0, cost=12.0
+[ 2] Frequency=30, Energy=-145.44,
+Solution=(0, 0, 1, 1, 1)	: value=13.0, cost=12.0
+[ 4] Frequency=3, Energy=-144.78,
+Solution=(0, 1, 1, 1, 0)	: value=16.0, cost=11.0
+
+プロセスは終了コード 0 で終了しました
+\end{verbatim}
+
+\end{document}
