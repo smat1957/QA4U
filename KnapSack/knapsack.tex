@@ -288,109 +288,32 @@ $H_{value}$は次の通り
 
 プログラムのコードに落としてみると次の通り
 
-\begin{lstlisting}[language=Python]
-from openjij import SASampler, SQASampler
-from collections import defaultdict, Counter
+\lstinputlisting[caption=MODEL1,label=l1]{knapsack.py}
 
-class MODEL1:
-    def __init__(self):
-        self.N = 5
-        self.C = 12.0
-        self.c = [3.0, 4.0, 6.0, 1.0, 5.0]
-        self.v = [6.0, 7.0, 8.0, 1.0, 4.0]
-        self.L1 = 1.0
-        self.L2 = self.L1 / 9.0
-        #self.Q = defaultdict(lambda: 0.0)
-        Samplers = [SASampler, SQASampler]
-        self.sampler = Samplers[1]()
-
-    def cost(self, Q):
-        for a in range(self.N):
-            Q[(a, a)] += self.L1 * self.c[a] * (self.c[a] - 2.0 * self.C)
-        for a in range(self.N - 1):
-            for b in range(a + 1, self.N):
-                Q[(a, b)] += 2.0 * self.L1 * self.c[a] * self.c[b]
-
-    def value(self, Q):
-        for a in range(self.N):
-            Q[(a, a)] -= self.L2 * self.v[a]
-
-    def hamiltonian(self, Q):
-        self.cost(Q)
-        self.value(Q)
-
-    def print_QUBO(self, Q):
-        # Print QUBO matrix (for debugging)
-        for i in range(self.N):
-            for j in range(self.N):
-                print("{:7.1f}".format(Q[(i, j)]), end=" ")
-            print()
-
-    def sample(self, Q, num_reads=100):
-        # Perform sampling
-        sampleset = self.sampler.sample_qubo(Q, num_reads=num_reads)
-        return sampleset
-
-    def evaluate(self, sampleset):
-        # Extract sample solutions, energies, and sort them by frequency
-        samples = sampleset.record['sample']
-        energies = sampleset.record['energy']
-        # Combine solutions and corresponding energies
-        sample_data = [(tuple(sample), energy) for sample, energy in zip(samples, energies)]
-        # Sort the results by appearance frequency and then energy
-        sample_frequency = Counter(sample for sample, _ in sample_data)
-        # Print sorted results by frequency and include energy
-        print("\nSorted samples by frequency and energy:")
-        for solution, freq in sample_frequency.most_common():
-            energy = next(energy for sample, energy in sample_data if sample == solution)
-            print(f"Sample: {solution}, Frequency: {freq}, Energy: {energy:+.2f}")
-        # Evaluate each solution
-        print("\nEvaluation of solutions:")
-        for nth, (solution, freq) in enumerate(sample_frequency.most_common(), 1):
-            value = volume = 0.0
-            for i, bit in enumerate(solution[:self.N]):  # Consider only the first N bits for w and c
-                if bit == 1:
-                    volume += self.c[i]
-                    value += self.v[i]
-            if volume <= self.C:
-                energy = next(energy for sample, energy in sample_data if sample == solution)
-                print(f"[{nth:2d}] Frequency={freq}, Energy={energy:+.2f},\n Solution={solution}", end="\t")
-                print(f": value={value:4.1f}, cost={volume:4.1f}")
-
-if __name__ == "__main__":
-    model = MODEL1()
-    Q = defaultdict(lambda: 0.0)
-    model.hamiltonian(Q)
-    model.print_QUBO(Q)
-    sampleset = model.sample(Q, num_reads=100)
-    model.evaluate(sampleset)
-\end{lstlisting}
-
-プログラムを実行させた結果
+プログラムの実行
 
 \begin{verbatim}
-  -62.3    24.0    36.0     6.0    30.0
-    0.0   -79.2    48.0     8.0    40.0
-    0.0     0.0  -107.1    12.0    60.0
-    0.0     0.0     0.0   -22.9    10.0
-    0.0     0.0     0.0     0.0   -94.6
+  -63.7    24.0    36.0     6.0    30.0
+    0.0   -80.8    48.0     8.0    40.0
+    0.0     0.0  -108.9    12.0    60.0
+    0.0     0.0     0.0   -23.1    10.0
+    0.0     0.0     0.0     0.0   -95.4
 
 Sorted samples by frequency and energy:
-Sample: (0, 0, 1, 1, 1), Frequency: 57, Energy: -142.56
-Sample: (1, 1, 0, 0, 1), Frequency: 31, Energy: -142.11
-Sample: (0, 1, 1, 1, 0), Frequency: 6, Energy: -141.22
-Sample: (1, 1, 1, 0, 0), Frequency: 4, Energy: -140.67
-Sample: (0, 0, 1, 0, 1), Frequency: 1, Energy: -141.67
-Sample: (1, 1, 0, 1, 1), Frequency: 1, Energy: -141.00
+Sample: (1, 1, 0, 0, 1), Frequency: 37, Energy: -145.89
+Sample: (0, 0, 1, 1, 1), Frequency: 30, Energy: -145.44
+Sample: (1, 1, 1, 0, 0), Frequency: 30, Energy: -145.33
+Sample: (0, 1, 1, 1, 0), Frequency: 2, Energy: -144.78
+Sample: (0, 0, 1, 0, 1), Frequency: 1, Energy: -144.33
 
 Evaluation of solutions:
-[ 1] Frequency=57, Energy=-142.56,
- Solution=(0, 0, 1, 1, 1)	: value=13.0, cost=12.0
-[ 2] Frequency=31, Energy=-142.11,
+[ 1] Frequency=37, Energy=-145.89,
  Solution=(1, 1, 0, 0, 1)	: value=17.0, cost=12.0
-[ 3] Frequency=6, Energy=-141.22,
+[ 2] Frequency=30, Energy=-145.44,
+ Solution=(0, 0, 1, 1, 1)	: value=13.0, cost=12.0
+[ 4] Frequency=2, Energy=-144.78,
  Solution=(0, 1, 1, 1, 0)	: value=16.0, cost=11.0
-[ 5] Frequency=1, Energy=-141.67,
+[ 5] Frequency=1, Energy=-144.33,
  Solution=(0, 0, 1, 0, 1)	: value=12.0, cost=11.0
 
 プロセスは終了コード 0 で終了しました
@@ -457,82 +380,47 @@ c = \sum_{\alpha=1}^{N}c_\alpha q_\alpha = c_1 q_1 + c_2 q_2 + c_3 q_3 + \dots +
 
 $q_n$は$0,1$を取る決定変数で, $n$番目の荷物をナップサックに詰めるかどうかを決める変数なので, 例えば下表のように荷物$C,D,E$を選択すれば, 荷物の総体積（$3\times 0+4\times 0+6\times 1+1\times 1+5\times 1=12$）を12にすることができる.\\
 
-\begin{lstlisting}[language=Python]
-from knapsack import MODEL1
+\lstinputlisting[caption=MODEL2,label=l2]{model2.py}
 
-class MODEL2(MODEL1):
-    def __init__(self):
-        super().__init__()
-        self.N = 5
-        self.C = 12.0
-        self.c = [3.0, 4.0, 6.0, 1.0, 5.0]
-        self.v = [6.0, 7.0, 8.0, 1.0, 4.0]
-        self.L1 = 1.0
-        self.L2 = self.L1 / 9.0
-        self.Q = defaultdict(lambda: 0.0)
+ここで作成したcost2()関数は、結局のところ「12以下」のいずれの場合も許容されることになり、そのいずれの場合でも等しく低いエネルギーレヴェルを実現できることになる。そこで、MODEL1クラスで作成したcos()関数を追加してみた。ただし、このcost()関数の寄与を大きくすると結局MODEL1と同じことをしている事になるので要注意。
 
-    def slack_unique(self, Q):
-        for k in range(self.C):
-            Q[(k+self.N, k+self.N)] -= self.L1
-        for k in range(self.C - 1):
-            for l in range(k + 1, self.C):
-                Q[(k+self.N, l+self.N)] += 2.0 * self.L1
-
-    def slack_sum(self, Q):
-        for k in range(self.C):
-            Q[(k+self.N, k+self.N)] += self.L1 * k**2
-        for k in range(self.C - 1):
-            for l in range(k + 1, self.C):
-                Q[(k+self.N, l+self.N)] += 2.0 * self.L1 * k * l
-        for a in range(self.N):
-            Q[(a, a)] += self.L1 * self.c[a] * self.c[a]
-        for a in range(self.N - 1):
-            for b in range(a + 1, self.N):
-                Q[(a, b)] += 2.0 * self.L1 * self.c[a] * self.c[b]
-        for a in range(self.N - 1):
-            for b in range(a + 1, self.N):
-                Q[(a, b)] += 2.0 * self.L1 * self.c[a] * self.c[b]
-        for k in range(self.C):
-            for a in range(self.N):
-                Q[(k+self.N, a)] -= 2.0 * self.L1 * k * self.c[a]
-
-    def cost(self, Q):
-        self.slack_unique(Q)
-        self.slack_sum(Q)
-
-    def hamiltonian(self, Q):
-        self.cost(Q)
-        self.value(Q)
-
-if __name__ == "__main__":
-    model = MODEL1()
-    Q = defaultdict(lambda: 0.0)
-    model.hamiltonian(Q)
-    model.print_QUBO(Q)
-    sampleset = model.sample(Q, num_reads=100)
-    model.evaluate(sampleset)
-\end{lstlisting}
+以下の結果の出力では、選ばれた荷物の容積の総和が12を超えるものは表示していない
 
 \begin{verbatim}
--62.3    24.0    36.0     6.0    30.0
-  0.0   -79.2    48.0     8.0    40.0
-  0.0     0.0  -107.1    12.0    60.0
-  0.0     0.0     0.0   -22.9    10.0
-  0.0     0.0     0.0     0.0   -94.6
+  -306.7   168.0   252.0    42.0   210.0
+  0.0  -384.8   336.0    56.0   280.0
+  0.0     0.0  -504.9    84.0   420.0
+  0.0     0.0     0.0  -114.1    70.0
+  0.0     0.0     0.0     0.0  -450.4
 
 Sorted samples by frequency and energy:
-Sample: (0, 0, 1, 1, 1), Frequency: 66, Energy: -142.56
-Sample: (1, 1, 0, 0, 1), Frequency: 25, Energy: -142.11
-Sample: (0, 1, 1, 1, 0), Frequency: 6, Energy: -141.22
-Sample: (1, 1, 1, 0, 0), Frequency: 3, Energy: -140.67
+Sample: (0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0), Frequency: 2, Energy: -653.67
+Sample: (0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0), Frequency: 1, Energy: -643.33
+Sample: (0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0), Frequency: 1, Energy: -656.33
+Sample: (0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0), Frequency: 1, Energy: -655.33
+Sample: (0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0), Frequency: 1, Energy: -635.44
+Sample: (0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0), Frequency: 1, Energy: -525.11
+Sample: (0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0), Frequency: 1, Energy: -652.67
+Sample: (0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0), Frequency: 1, Energy: -656.33
+Sample: (0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0), Frequency: 1, Energy: -642.33
 
 Evaluation of solutions:
-[ 1] Frequency=66, Energy=-142.56,
-Solution=(0, 0, 1, 1, 1)	: value=13.0, cost=12.0
-[ 2] Frequency=25, Energy=-142.11,
-Solution=(1, 1, 0, 0, 1)	: value=17.0, cost=12.0
-[ 3] Frequency=6, Energy=-141.22,
-Solution=(0, 1, 1, 1, 0)	: value=16.0, cost=11.0
+[ 1] Frequency=2, Energy=-653.67,
+Solution=(0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0)	: value=15.0, cost=10.0
+[ 2] Frequency=1, Energy=-643.33,
+Solution=(0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0)	: value=12.0, cost=10.0
+[ 3] Frequency=1, Energy=-656.33,
+Solution=(0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0)	: value=12.0, cost=11.0
+[ 4] Frequency=1, Energy=-655.33,
+Solution=(0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0)	: value=12.0, cost=11.0
+[ 5] Frequency=1, Energy=-635.44,
+Solution=(0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0)	: value=13.0, cost=12.0
+[ 7] Frequency=1, Energy=-652.67,
+Solution=(0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0)	: value=15.0, cost=10.0
+[ 8] Frequency=1, Energy=-656.33,
+Solution=(0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0)	: value=12.0, cost=11.0
+[ 9] Frequency=1, Energy=-642.33,
+Solution=(0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0)	: value=12.0, cost=10.0
 
 プロセスは終了コード 0 で終了しました
 \end{verbatim}
@@ -563,8 +451,6 @@ slack変数は、決定変数$q_\alpha$の後ろに繋げて解く事になる�
   1&1&1&0& 14\\
   1&1&1&1& 15\\\hline
 \end{tabular}\\
-
-※ ただし、この4ビットの2進符号化は、結局のところ「15以下」のいずれの場合も許容されるので、「12以下」の制約にするには更なる工夫が必要になる。ここでは、「15以下」のやり方を示すにとどめる。
 
 前の例で実施した、バイナリーエンコーディングなしの、通常のslack変数の場合のハミルトニアンは、
 \[
@@ -605,71 +491,35 @@ s_3&\rightarrow& s_{3+N}\rightarrow q_{3+N}
 
 \subsection{実装}
 
-\begin{lstlisting}[language=Python]
-from knapsack import MODEL1
+\lstinputlisting[caption=MODEL3,label=l3]{model3.py}
 
-class MODEL3(MODEL1):
-    def __init__(self):
-        super().__init__()
-        self.N = 5
-        self.C = 12.0
-        self.M = 3
-        self.c = [3.0, 4.0, 6.0, 1.0, 5.0]
-        self.v = [6.0, 7.0, 8.0, 1.0, 4.0]
-        self.L1 = 1.0
-        self.L2 = self.L1 / 9.0
-        self.Q = defaultdict(lambda: 0.0)
-
-    def cost(self, Q):
-        for n1 in range(self.M):
-            for n2 in range(n1+1, self.M):
-                Q[(n1+self.N, n2+self.N)] += 2.0 * self.L1 * 2**n1 * 2**n2
-        for a in range(self.N - 1):
-            for b in range(a + 1, self.N):
-                Q[(a, b)] += 2.0 * self.L1 * self.c[a] * self.c[b]
-        for n in range(self.M+1):
-            for a in range(self.N):
-                Q[(n + self.N, a)] -= 2.0 * self.L1 * 2**n * self.c[a]
-        for a in range(self.N):
-            Q[(a, a)] += self.L1 * self.c[a] * self.c[a]
-        for n in range(self.M + 1):
-            Q[(n + self.N, n + self.N)] += self.L1 * 2**(2*n)
-
-    def hamiltonian(self, Q):
-        self.cost(Q)
-        self.value(Q)
-
-if __name__ == '__main__':
-    model = MODEL1()
-    Q = defaultdict(lambda: 0.0)
-    model.hamiltonian(Q)
-    model.print_QUBO(Q)
-    sampleset = model.sample(Q, num_reads=100)
-    model.evaluate(sampleset)
-\end{lstlisting}
+この4ビットの2進符号化によるcost3()関数は、結局のところ「15以下」のいずれの場合も許容されることになり、「15以下」のどの値でも等しくエネルギーレヴェルの低い状態に落ち着けるだろう。つまり「12に近い方がよい」という制約が必要になる。そこで、MODEL1クラスで作成したcos()関数を追加した。ただし、このcost()関数の寄与を大きくすると結局MODEL1と同じことをしている事になるので要注意。
 
 以下の結果の出力では、選ばれた荷物の容積の総和が12を超えるものは表示していない
 
 \begin{verbatim}
--63.7    24.0    36.0     6.0    30.0
-  0.0   -80.8    48.0     8.0    40.0
-  0.0     0.0  -108.9    12.0    60.0
-  0.0     0.0     0.0   -23.1    10.0
-  0.0     0.0     0.0     0.0   -95.4
+  7.7    24.2    36.4     6.1    30.3
+  0.0    14.4    48.5     8.1    40.4
+  0.0     0.0    34.0    12.1    60.6
+  0.0     0.0     0.0     0.7    10.1
+  0.0     0.0     0.0     0.0    23.6
 
 Sorted samples by frequency and energy:
-Sample: (1, 1, 0, 0, 1), Frequency: 39, Energy: -145.89
-Sample: (0, 0, 1, 1, 1), Frequency: 30, Energy: -145.44
-Sample: (1, 1, 1, 0, 0), Frequency: 28, Energy: -145.33
-Sample: (0, 1, 1, 1, 0), Frequency: 3, Energy: -144.78
+Sample: (1, 1, 1, 1, 0, 1, 1, 1, 1), Frequency: 2, Energy: -2.84
+Sample: (1, 1, 0, 1, 0, 1, 1, 1, 0), Frequency: 2, Energy: -1.84
+Sample: (1, 1, 0, 0, 1, 0, 0, 1, 1), Frequency: 2, Energy: -3.33
+Sample: (1, 1, 1, 0, 0, 1, 0, 1, 1), Frequency: 1, Energy: -3.76
+Sample: (1, 0, 1, 1, 1, 1, 1, 1, 1), Frequency: 1, Energy: -3.46
+Sample: (1, 0, 1, 1, 0, 1, 1, 0, 1), Frequency: 1, Energy: -2.07
+Sample: (1, 1, 0, 1, 1, 1, 0, 1, 1), Frequency: 1, Energy: -3.43
 
 Evaluation of solutions:
-[ 1] Frequency=39, Energy=-145.89,
-Solution=(1, 1, 0, 0, 1)	: value=17.0, cost=12.0
-[ 2] Frequency=30, Energy=-145.44,
-Solution=(0, 0, 1, 1, 1)	: value=13.0, cost=12.0
-[ 4] Frequency=3, Energy=-144.78,
-Solution=(0, 1, 1, 1, 0)	: value=16.0, cost=11.0
+[ 2] Frequency=2, Energy=-1.84,
+Solution=(1, 1, 0, 1, 0, 1, 1, 1, 0)	: value=14.0, cost= 8.0
+[ 3] Frequency=2, Energy=-3.33,
+Solution=(1, 1, 0, 0, 1, 0, 0, 1, 1)	: value=17.0, cost=12.0
+[ 6] Frequency=1, Energy=-2.07,
+Solution=(1, 0, 1, 1, 0, 1, 1, 0, 1)	: value=15.0, cost=10.0
 
 プロセスは終了コード 0 で終了しました
 \end{verbatim}

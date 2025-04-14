@@ -4,29 +4,28 @@ from collections import defaultdict, Counter
 class MODEL1:
     def __init__(self):
         self.N = 5
-        self.C = 12.0
+        self.C = 12
         self.c = [3.0, 4.0, 6.0, 1.0, 5.0]
         self.v = [6.0, 7.0, 8.0, 1.0, 4.0]
         self.L1 = 1.0
         self.L2 = self.L1 / 9.0
-        #self.Q = defaultdict(lambda: 0.0)
-        Samplers = [SASampler, SQASampler]
-        self.sampler = Samplers[1]()
+        self.Samplers = [SASampler, SQASampler]
+        self.sampler = self.Samplers[1]()
 
-    def cost(self, Q):
+    def cost(self, Q, L1):
         for a in range(self.N):
-            Q[(a, a)] += self.L1 * self.c[a] * (self.c[a] - 2.0 * self.C)
+            Q[(a, a)] += L1 * self.c[a] * (self.c[a] - 2.0 * self.C)
         for a in range(self.N - 1):
             for b in range(a + 1, self.N):
-                Q[(a, b)] += 2.0 * self.L1 * self.c[a] * self.c[b]
+                Q[(a, b)] += 2.0 * L1 * self.c[a] * self.c[b]
 
-    def value(self, Q):
+    def value(self, Q, L2):
         for a in range(self.N):
-            Q[(a, a)] -= self.L2 * self.v[a]
+            Q[(a, a)] -= L2 * self.v[a]
 
     def hamiltonian(self, Q):
-        self.cost(Q)
-        self.value(Q)
+        self.cost(Q, self.L1)
+        self.value(Q, self.L2)
 
     def print_QUBO(self, Q):
         # Print QUBO matrix (for debugging)
