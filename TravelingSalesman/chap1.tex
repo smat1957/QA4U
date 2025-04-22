@@ -70,17 +70,45 @@ $\lambda$は正の定数。
 
 \lstinputlisting[caption=巡回セールスマン問題,label=p01]{tsp01.py}
 
-[実行結果] A,C,B,E,D が循環している（どこからスタートしたかによる）\\
+\newpage
 
-\begin{verbatim}
-  ['A', 'C', 'B', 'E', 'D'] 19.0
-  ['E', 'B', 'C', 'A', 'D'] 19.0
-  ['D', 'E', 'B', 'C', 'A'] 19.0
-  ['B', 'E', 'D', 'A', 'C'] 19.0
-  ['D', 'A', 'C', 'B', 'E'] 19.0
-  ['C', 'B', 'E', 'D', 'A'] 19.0
-  ['C', 'A', 'D', 'E', 'B'] 19.0
-  ['A', 'D', 'E', 'B', 'C'] 19.0
+[実行結果] A,C,B,E,D が循環している（どこからスタートしたかによる）
 
-  プロセスは終了コード 0 で終了しました
-\end{verbatim}
+\begin{figure}[h]
+  \centering
+  \begin{minipage}[c]{0.49\columnwidth}
+    \centering
+    \begin{verbatim}
+      ['A', 'C', 'B', 'E', 'D'] 19.0
+      ['E', 'B', 'C', 'A', 'D'] 19.0
+      ['D', 'E', 'B', 'C', 'A'] 19.0
+      ['B', 'E', 'D', 'A', 'C'] 19.0
+      ['D', 'A', 'C', 'B', 'E'] 19.0
+      ['C', 'B', 'E', 'D', 'A'] 19.0
+      ['C', 'A', 'D', 'E', 'B'] 19.0
+      ['A', 'D', 'E', 'B', 'C'] 19.0
+
+      プロセスは終了コード 0 で終了しました
+    \end{verbatim}
+      %\centering
+      %\includegraphics[width=0.9\columnwidth]{a.png}
+      %\caption{左}
+      %\label{fig:a}
+  \end{minipage}
+  \begin{minipage}[c]{0.49\columnwidth}
+    \centering
+    \begin{tabular}{|ccccc|ccccc|}\hline
+        \multicolumn{10}{|c|}{同じコストで、あり得る並び} \\\hline
+        \multicolumn{5}{|c|}{順方向} & \multicolumn{5}{|c|}{逆方向} \\\hline
+        A & C & B & E & D & D & E & B & C & A \\
+        C & B & E & D & A & A & D & E & B & C \\
+        B & E & D & A & C & C & A & D & E & B \\
+        E & D & A & C & B & B & C & A & D & E \\
+        D & A & C & B & E & E & B & C & A & D \\\hline
+     \end{tabular}
+      %\centering
+      %\includegraphics[width=0.9\columnwidth]{b.png}
+      %\caption{右}
+      %\label{fig:b}
+  \end{minipage}
+  \end{figure}
