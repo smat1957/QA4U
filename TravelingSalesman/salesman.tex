@@ -1,0 +1,211 @@
+% latex uft-8
+\documentclass[uplatex,dvipdfmx,a4paper,11pt,oneside,openany]{jsbook}
+%
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{bm}
+\usepackage{physics}
+\usepackage{graphicx}
+\usepackage{ascmac}
+\usepackage{amsmath}
+\usepackage{setspace}
+\usepackage{here}
+\usepackage{fancybox}
+\usepackage{url}
+\usepackage{listings,jlisting} %日本語のコメントアウトをする場合jlistingが必要
+\usepackage{xcolor}
+\usepackage{comment}
+\usepackage{multicol}
+\usepackage{amsmath, amssymb}
+\usepackage{type1cm}
+\usepackage{fancybox}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+%\begin{comment}
+\lstset{
+  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}; should come as last argument
+  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  deletekeywords={...},            % if you want to delete keywords from the given language
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  firstnumber=1000,                % start line enumeration with line 1000
+  frame=single,	                   % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  language=Octave,                 % the language of the code
+  morekeywords={*,...},            % if you want to add more keywords to the set
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  stepnumber=2,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=2,	                   % sets default tabsize to 2 spaces
+  title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+%\end{comment}
+
+\lstdefinelanguage{mypy}{
+  % リテラルと演算記号
+  morekeywords=[1]{+=,=,==,!=,!,>,<,>=,<=,++,-,+,*,\%,/},
+  % 予約語
+  morekeywords=[2]{False,None,True,and,as,assert,async,await,break,
+    class,continue,def,del,elif,else,except,finally,for,from,global,
+    if,import,in,is,lambda,nonlocal,not,or,pass,raise,return,try,while,
+    with,yield,print,match,case
+  },
+  % 識別子
+  morekeywords=[3]{defined_func},
+  % 区切り文字を強制的に色付け
+  literate=*{.}{{\color{delimiter}.}}1
+            {,}{{\color{delimiter},}}1 {:}{{\color{delimiter}:}}1
+            {)}{{\color{delimiter})}}1 {(}{{\color{delimiter}(}}1
+            {[}{{\color{delimiter}[}}1 {]}{{\color{delimiter}]}}1
+            {\{}{{\color{delimiter}\{}}1 {\}}{{\color{delimiter}\}}}1,
+  % 大文字小文字を区別
+  sensitive=true,
+  % 行コメントの設定
+  morecomment=[l]{\#},
+  % Stringリテラルの設定
+  morestring=[b]{\'},
+  morestring=[b]{\"},
+  % 単語として扱う文字
+  alsoletter={\%<>=+-*\/1234567890!},
+  % 枠
+  frame=none,
+  % 長くなったら途中で改行
+  breaklines=true,
+  % 自動改行時のインデント
+  breakindent=12pt,
+  % 文字間隔を一定に
+  columns=fixed,
+  % 文字の横のサイズを小さく
+  basewidth=0.5em,
+  % 行番号を左に
+  numbers=left,
+  % 行番号の書式
+  numberstyle={\scriptsize\color{white}},
+  % 行番号の増加数は1=連番に
+  stepnumber=1,
+  % フレームの左の余白
+  framexleftmargin=18pt,
+  % スペースを省略せず保持
+  keepspaces=true,
+  % インデントサイズ
+  tabsize=4,
+  backgroundcolor={},                                   % 背景色=透明
+  basicstyle={\small\ttfamily\color{white}},            % 通常部分の書式
+  identifierstyle={\small\color{white}},                % 識別子の書式
+  commentstyle={\small\color{comment}},                 % コメントの書式
+  keywordstyle=[1]{\small\bfseries\color{literal}},     % リテラルと演算記号の書式
+  keywordstyle=[2]{\small\bfseries\color{reserved}},    % 予約語の書式
+  keywordstyle=[3]{\small\bfseries\color{identifier}},  % 自分で定義した識別子の書式
+  stringstyle={\small\ttfamily\color{literal}},         % 文字列の書式
+}
+%ここからソースコードの表示に関する設定
+\lstdefinestyle{customc}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  numbers=left,
+  frame=single,
+  xleftmargin=\parindent,
+  language=C,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{green!40!black},
+  commentstyle=\itshape\color{purple!40!black},
+  identifierstyle=\color{blue},
+  stringstyle=\color{orange},
+}
+
+\lstdefinestyle{custompy}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  numbers=none,
+  frame=l,
+  xleftmargin=\parindent,
+  language=python,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{green!40!black},
+  commentstyle=\itshape\color{purple!40!black},
+  identifierstyle=\color{blue},
+  stringstyle=\color{orange},
+}
+
+\lstdefinestyle{customasm}{
+  belowcaptionskip=1\baselineskip,
+  frame=L,
+  xleftmargin=\parindent,
+  language=[x86masm]Assembler,
+  basicstyle=\footnotesize\ttfamily,
+  commentstyle=\itshape\color{purple!40!black},
+}
+
+\lstset{escapechar=@,style=custompy}
+\renewcommand{\lstlistingname}{プログラム}
+
+\begin{comment}
+\makeatletter
+\def\ps@plainfoot{%
+  \let\@mkboth\@gobbletwo
+  \let\@oddhead\@empty
+  \def\@oddfoot{\normalfont\hfil-- \thepage\ --\hfil}%
+  \let\@evenhead\@empty
+  \let\@evenfoot\@oddfoot}
+  \let\ps@plain\ps@plainfoot
+  \renewcommand{\chapter}{%
+  \if@openright\cleardoublepage\else\clearpage\fi
+  \global\@topnum\z@
+  \secdef\@chapter\@schapter}
+\makeatother
+\end{comment}
+
+%
+\newcommand{\maru}[1]{{\ooalign{%
+\hfil\hbox{$\bigcirc$}\hfil\crcr%
+\hfil\hbox{#1}\hfil}}}
+%
+\setlength{\textwidth}{\fullwidth}
+\setlength{\textheight}{40\baselineskip}
+\addtolength{\textheight}{\topskip}
+\setlength{\voffset}{-0.55in}
+%
+\makeatletter
+\newenvironment{tablehere}
+  {\def\@captype{table}}
+  {}
+\newenvironment{figurehere}
+  {\def\@captype{figure}}
+  {}
+\makeatother
+%
+\title{巡回セールスマン問題（TSP:Traveling Salesman Problem）}
+\author{smat1957@gmail.com\thanks{https://altema.is.tohoku.ac.jp/QA4U3/}}
+\date{\today}
+%
+\begin{document}
+
+\maketitle
+
+\include{chap1}
+
+\begin{thebibliography}{9}
+  \bibitem{b1} 西森秀稔、大関真之, 量子アニーリングの基礎, 共立出版, 2.6.1
+  \bibitem{b2} \url{https://qiita.com/suzuki_sh/items/32468fbbe3f400edce35}
+  \bibitem{b3} \url{https://qiita.com/yabish/items/9f42e3752174aef8b79f}
+  \bibitem{b4} \url{https://qiita.com/yufuji25/items/0425567b800443a679f7}
+  \bibitem{b5} \url{https://motojapan.hateblo.jp/entry/2017/11/15/082738}
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,86 @@
+\chapter{量子ニーリングの基礎}
+
+\cite{b1} 西森秀稔、大関真之 著「量子アニーリングの基礎」共立出版より2.6.1
+
+\section{問題}
+
+予め決められた地点を全て1度ずつ訪れて元の地点に戻ってくるための最短経路を探す。
+
+例えば、A,B,C,D,Eの5つの地点があって、仮にAからスタートすると、次の地点はB,C,D,Eの4箇所の中から選ばなければならない。
+Bを選んだら次はC,D,Eの3通り。その次は2通り。最終的には$4\times 3\times 2\times = 24$通りの選び方がある事になる。
+訪れる地点の数が$N$地点だと、$(N-1)\times(N-2)\times\cdots\times2\times1=(N-1)!$通りになる。$N$が大きいと総当たりで経路を探すことは困難であり、巡回セールスマン問題は「NP困難問題」に分類されている。
+
+\section{巡回セールスマン問題をイジング模型で表す}
+
+まず、$N\times N$の表を考え、横方向に地点の名前（A,B,C,D,E）、縦方向には何番目に訪れるかを割り当てる。
+
+\begin{table}[h]
+  \centering
+  \caption{表のタイトル}
+  \label{tab:hogehoge}
+  \begin{tabular}{c|ccccc}
+          & A & B & C & D & E \\\hline
+    1番目  & 1 & 0 & 0 & 0 & 0 \\
+    2番目  & 0 & 0 & 1 & 0 & 0 \\
+    3番目  & 0 & 1 & 0 & 0 & 0 \\
+    4番目  & 0 & 0 & 0 & 1 & 0 \\
+    5番目  & 0 & 0 & 0 & 0 & 1 \\\hline
+    1番目  & 1 & 0 & 0 & 0 & 0 \\
+  \end{tabular}
+\end{table}
+
+セールスマンが訪れる箇所には1を、そうでない所には0を置く。
+上の表の例では、$A\rightarrow C\rightarrow B\rightarrow D\rightarrow E\rightarrow A$という経路に対応している。
+
+式で表現するために、表の各箇所に対応した2値変数$q_{\alpha i}$を割り当ててセールスマンの辿る経路を表現する。$\alpha$は地点名（$A,B,C,\cdots$）を、$i$は巡る順番（$1,2,3,\cdots$）を表している。
+
+地点$\alpha$と$\beta$の間の距離$d_{\alpha \beta}$が予め与えられているとすると、セールスマンが巡る全経路長$L$は、
+\[
+L = \sum_{\alpha,\beta}\sum_{i=1}^N d_{\alpha \beta}q_{\alpha, i}q_{\beta, i+1}
+\]
+$q_{\alpha,i}$は2値変数（0か1）なので、$q_{\alpha, i}$と$q_{\beta, i+1}$の両方が1の場合に限り、$d_{\alpha \beta}$が$L$に加算される事になる。この経路長$L$を最小にする$\{q_{\alpha,i}\}$（0か1か）、を選ぶことになる。
+
+ただし、
+\begin{itemize}
+\item 各地点には1度しか訪れない（表では、各列に1は1つだけ）\\
+$\longrightarrow$ 各$\alpha$において、$(\sum_i q_{\alpha, i} - 1)^2=0$
+\item 各時点で訪れる地点は1箇所だけ（表では、各行に1は1つだけ）\\
+$\longrightarrow$ 各$i$において、$(\sum_\alpha q_{\alpha, i} - 1)^2=0$
+\end{itemize}
+という2つの制約が課された上で、$L$が最小になる様に$\{q_{\alpha, i}\}$を選ばなければならない。
+
+以上の考察より、目的関数全体の$H$は次の様になる
+\[
+H=\sum_{\alpha,\beta}\sum_i d_{\alpha\beta}q_{\alpha, i}q_{\beta, i+1} + \lambda\sum_\alpha\bigg(\sum_i q_{\alpha, i} - 1\bigg)^2 + \lambda\sum_i\bigg(\sum_\alpha q_{\alpha, i} - 1\bigg)^2
+\]
+$\lambda$は正の定数。
+
+\section{式の展開}
+
+\begin{eqnarray*}
+  H &=& \lambda\sum_\alpha\bigg((\sum_i q_{\alpha, i})^2 - 2 \sum_i q_{\alpha, i}\bigg) + \lambda\sum_i\bigg((\sum_\alpha q_{\alpha, i})^2 - 2\sum_\alpha q_{\alpha, i}\bigg) + \sum_{\alpha,\beta}\sum_i d_{\alpha\beta}q_{\alpha, i}q_{\beta, i+1}\\
+  &=& \lambda\sum_\alpha\bigg(\sum_i q_{\alpha,i}^2 +2\sum_{i,j}q_{\alpha,i}q_{\alpha,j}-2\sum_i q_{\alpha,i}\bigg) + \lambda\sum_i\bigg(\sum_\alpha q_{\alpha,i}^2 +2\sum_{\alpha,\beta}q_{\alpha,i}q_{\beta,i}-2\sum_\alpha q_{\alpha,i}\bigg)\\
+  &+& \sum_{\alpha,\beta}\sum_i d_{\alpha\beta}q_{\alpha, i}q_{\beta, i+1}\\
+&=& -\lambda\sum_\alpha\bigg(\sum_i q_{\alpha,i} - 2\sum_i\sum_j q_{\alpha,i}q_{\alpha,j}\bigg) - \lambda\sum_i\bigg(\sum_\alpha q_{\alpha,i} - 2\sum_\alpha\sum_\beta q_{\alpha,i}q_{\beta,i}\bigg) + \sum_{\alpha,\beta}\sum_i d_{\alpha\beta}q_{\alpha, i}q_{\beta, i+1}
+\end{eqnarray*}
+
+ここで$q$は2値変数なので、$q^2=q$が成り立つ。また、定数は最小化では無視できる。
+
+\section{実装}
+
+\lstinputlisting[caption=巡回セールスマン問題,label=p01]{tsp01.py}
+
+[実行結果]\\
+
+\begin{verbatim}
+  ['A', 'C', 'B', 'E', 'D'] 19.0
+  ['E', 'B', 'C', 'A', 'D'] 19.0
+  ['D', 'E', 'B', 'C', 'A'] 19.0
+  ['B', 'E', 'D', 'A', 'C'] 19.0
+  ['D', 'A', 'C', 'B', 'E'] 19.0
+  ['C', 'B', 'E', 'D', 'A'] 19.0
+  ['C', 'A', 'D', 'E', 'B'] 19.0
+  ['A', 'D', 'E', 'B', 'C'] 19.0
+
+  プロセスは終了コード 0 で終了しました
+\end{verbatim}
