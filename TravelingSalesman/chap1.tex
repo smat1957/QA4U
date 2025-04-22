@@ -97,15 +97,16 @@ $\lambda$は正の定数。
   \end{minipage}
   \begin{minipage}[c]{0.49\columnwidth}
     \centering
-    \begin{tabular}{|ccccc|ccccc|}\hline
-        \multicolumn{10}{|c|}{同じコストで、あり得る並び} \\\hline
-        \multicolumn{5}{|c|}{順方向} & \multicolumn{5}{|c|}{逆方向} \\\hline
-        A & C & B & E & D & D & E & B & C & A \\
-        C & B & E & D & A & A & D & E & B & C \\
-        B & E & D & A & C & C & A & D & E & B \\
-        E & D & A & C & B & B & C & A & D & E \\
-        D & A & C & B & E & E & B & C & A & D \\\hline
+    \begin{tabular}{|c|ccccc|ccccc|}\hline
+      \multirow{2}{*}{} & \multicolumn{10}{|c|}{同じコストで、あり得る並び} \\\cline{2-11}
+       & \multicolumn{5}{|c|}{順方向} & \multicolumn{5}{|c|}{逆方向} \\\hline
+       & A & C & B & E & D & D & E & B & C & A \\
+       & C & B & E & D & A & A & D & E & B & C \\
+       & B & E & D & A & C & C & A & D & E & B \\
+      $\rightarrow$ & E & D & A & C & B & B & C & A & D & E \\
+       & D & A & C & B & E & E & B & C & A & D \\\hline
      \end{tabular}
+     \leftline{（$\rightarrow$この2つは出ていない様です）}
       %\centering
       %\includegraphics[width=0.9\columnwidth]{b.png}
       %\caption{右}
