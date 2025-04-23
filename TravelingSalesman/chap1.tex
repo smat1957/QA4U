@@ -70,7 +70,7 @@ $\lambda$は正の定数。
 
 \lstinputlisting[caption=巡回セールスマン問題,label=p01]{tsp01.py}
 
-\newpage
+%\newpage
 
 [実行結果] A,C,B,E,D が循環している（どこからスタートしたかによる）
 
@@ -106,7 +106,8 @@ $\lambda$は正の定数。
       $\rightarrow$ & E & D & A & C & B & B & C & A & D & E \\
        & D & A & C & B & E & E & B & C & A & D \\\hline
      \end{tabular}
-     \leftline{（$\rightarrow$この2つは出ていない様です）}
+
+     \leftline{$\rightarrow$今回、この2つは出ていない(実行の都度変わる)}
       %\centering
       %\includegraphics[width=0.9\columnwidth]{b.png}
       %\caption{右}

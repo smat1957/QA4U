@@ -17,7 +17,6 @@ class TSP:
         for u,v,i,j in indices:
             ui = u * cities + i
             vj = v * cities + j
-            #print(u, v, i, j, ui, vj)
             if ui>vj:   # 上三角だけ
                 continue
             if ui==vj:  # 対角要素 \sum_\alpha\sum_i
@@ -123,7 +122,6 @@ class TSP:
 
 if __name__ == '__main__':
     city=["A", "B", "C", "D", "E"]
-    cities = len(city)
     cost = np.array([
     [0.0, 3.0, 4.0, 2.0, 7.0],
     [3.0, 0.0, 4.0, 6.0, 3.0],
