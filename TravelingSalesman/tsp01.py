@@ -58,7 +58,7 @@ class TSP:
     def result(self, sample_frequency):
         solved = []
         for solution in sample_frequency:
-            if not tsp.check(np.array(solution).reshape(cities, cities)):
+            if not self.check(np.array(solution).reshape(cities, cities)):
                 continue
             else:
                 solved.append(solution)
