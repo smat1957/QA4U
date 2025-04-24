@@ -4,7 +4,7 @@ import numpy as np
 
 class TSP:
     def __init__(self, city, cost_matrix):
-        samplers = [SASampler(), SQASampler]
+        samplers = [SASampler(), SQASampler()]
         self.sampler = samplers[0]
         self.cities = len(city)
         self.cost_matrix = np.array(cost_matrix)
