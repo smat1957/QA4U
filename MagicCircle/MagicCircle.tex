@@ -272,6 +272,7 @@ $\rightarrow \sum_{cell=1,5,9}(\sum_{i=1}^9 i\times q_{i+(cell-1)\times9})=15 $\
 \end{equation*}
 \end{enumerate}
 
+\begin{comment}
 \subsection{式の展開}
 
 \begin{eqnarray*}
@@ -287,8 +288,9 @@ $\rightarrow \sum_{cell=1,5,9}(\sum_{i=1}^9 i\times q_{i+(cell-1)\times9})=15 $\
   &=& \bigg(\sum_{d_1}\sum_{n_1}n_1\cdot q_{d_1,d_1,n_1}\sum_{d_2}\sum_{n_2}n_2\cdot q_{d_2,d_2,n_2}-2\cdot S\sum_d\sum_n n\cdot q_{d,d,n}\bigg)\\
   &+& \bigg(\sum_{d_1}\sum_{n_1}n_1\cdot q_{d_1,N-d_1+1,n_1}\sum_{d_2}\sum_{n_2}n_2\cdot q_{d_2,N-d_2+1,n_2} - 2\cdot S\sum_d\sum_n n\cdot q_{d,N-d+1,n}\bigg)
 \end{eqnarray*}
+\end{comment}
 
-\section{実装}
+\section{式の展開と実装}
 
 \subsection{class}
 
@@ -321,6 +323,13 @@ class MagicCircle:
 
 \subsection{制約：f1}
 
+各セルの中では$1\sim 9$の中のどれか1つだけが1になる（セルに2つ以上の数値は入らない）
+
+\begin{eqnarray*}
+  f_1 &=& \sum_i^N\sum_j^N\bigg(\sum_n^M q_{i,j,n} - 1\bigg)^2\\
+  &=& \sum_i\sum_j\bigg(\sum_{n_1}\sum_{n_2}q_{i,j,n_1}q_{i,j,n_2} - 2 \sum_n q_{i,j,n}\bigg)
+\end{eqnarray*}
+
 \begin{lstlisting}[language=Python]
   def sub1(self, i, j, L, Q):
     N, M, _, idx = self.get_param()
@@ -337,8 +346,14 @@ class MagicCircle:
     return Q
 \end{lstlisting}
 
-
 \subsection{制約：f2}
+
+あるセルの数値と同じ数値は、他のセルには入らない
+
+\begin{eqnarray*}
+  f_2 &=& \sum_n^M\bigg(\sum_i^N\sum_j^N q_{i,j,n} - 1\bigg)^2\\
+  &=& \sum_n\bigg(\sum_{i_1}\sum_{j_1}q_{i_1,j_1,n}\sum_{i_2}\sum_{j_2}q_{i_2,j_2,n} - 2 \sum_i\sum_j q_{i,j,n}\bigg)
+\end{eqnarray*}
 
 \begin{lstlisting}[language=Python]
   def sub2(self, n, L, Q):
@@ -359,6 +374,13 @@ class MagicCircle:
 
 \subsection{制約：f3}
 
+いずれの行方向の数値の和も同じ値$S$になる
+
+\begin{eqnarray*}
+  f_3 &=& \sum_i^N\bigg(\sum_j^N\sum_n^M n \cdot q_{i,j,n} - S\bigg)^2\\
+  &=& \sum_i\bigg(\sum_{j_1}\sum_{n_1}n_1\cdot q_{i,j_1,n_1}\sum_{j_2}\sum_{n_2}n_2\cdot q_{i,j_2,n_2} - 2\cdot S\sum_j\sum_n n\cdot q_{i,j,n}\bigg)
+\end{eqnarray*}
+
 \begin{lstlisting}[language=Python]
   def sub3(self, i, L, Q):
     N, M, S, idx = self.get_param()
@@ -377,6 +399,13 @@ class MagicCircle:
 \end{lstlisting}
 
 \subsection{制約：f4}
+
+いずれの列方向の数値の和も同じ値$S$になる
+
+\begin{eqnarray*}
+  f_4 &=& \sum_j^N\bigg(\sum_i^N\sum_n^M n \cdot q_{i,j,n} - S\bigg)^2\\
+  &=& \sum_j\bigg(\sum_{i_1}\sum_{n_1}n_1\cdot q_{i_1,j,n_1}\sum_{i_2}\sum_{n_2}n_2\cdot q_{i_2,j,n_2} - 2\cdot S\sum_i\sum_n n\cdot q_{i,j,n}\bigg)
+\end{eqnarray*}
 
 \begin{lstlisting}[language=Python]
   def sub4(self, j, L, Q):
@@ -398,18 +427,26 @@ class MagicCircle:
 
 \subsection{制約：f5}
 
+右下がりの対角要素の和と右上がりの対角要素の和も同じ値$S$になる
+
+\begin{eqnarray*}
+  f_5 &=& \bigg(\sum_d^N\sum_n^M n\cdot q_{d,d,n} - S\bigg)^2 + \bigg(\sum_d^N\sum_n^M n \cdot q_{d,N-d+1,n} - S\bigg)^2\\
+  &=& \bigg(\sum_{d_1}\sum_{n_1}n_1\cdot q_{d_1,d_1,n_1}\sum_{d_2}\sum_{n_2}n_2\cdot q_{d_2,d_2,n_2}-2\cdot S\sum_d\sum_n n\cdot q_{d,d,n}\bigg)\\
+  &+& \bigg(\sum_{d_1}\sum_{n_1}n_1\cdot q_{d_1,N-d_1+1,n_1}\sum_{d_2}\sum_{n_2}n_2\cdot q_{d_2,N-d_2+1,n_2} - 2\cdot S\sum_d\sum_n n\cdot q_{d,N-d+1,n}\bigg)
+\end{eqnarray*}
+
 \begin{lstlisting}[language=Python]
   def f5(self, L, Q):
     N, M, S, idx = self.get_param()
     Q = defaultdict(lambda: 0)
     for d1 in range(N):
         for n1 in range(M):
-            Q[(idx[(d1, d1, n1)], idx[(d1, d1, n1)])] -= 2.0 * (n1+1) * S * L
-            Q[(idx[(d1, N-d1-1, n1)], idx[(d1, N-d1-1, n1)])] -= 2.0 * (n1 + 1) * S * L
+            Q[(idx[(d1, d1, n1)], idx[(d1, d1, n1)])] -= 2.0*(n1+1)*S*L
+            Q[(idx[(d1, N-d1-1, n1)], idx[(d1, N-d1-1, n1)])] -= 2.0*(n1 + 1)*S*L
             for d2 in range(N):
                 for n2 in range(M):
-                    Q[(idx[(d1, d1, n1)], idx[(d2, d2, n2)])] += (n1+1) * (n2+1) * L
-                    Q[(idx[(d1, N-d1-1, n1)], idx[(d2, N-d2-1, n2)])] += (n1 + 1) * (n2 + 1) * L
+                    Q[(idx[(d1, d1, n1)], idx[(d2, d2, n2)])] += (n1+1)*(n2+1)*L
+                    Q[(idx[(d1,N-d1-1,n1)],idx[(d2,N-d2-1,n2)])] += (n1+1)*(n2+1)*L
     return Q
 \end{lstlisting}
 
@@ -552,6 +589,8 @@ if __name__ == '__main__':
 %\newpage
 
 \section{実行結果}
+
+複数出力されているのは、対称な形をチェックしていないため
 
 \begin{verbatim}
 [[6 7 2]
