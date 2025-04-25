@@ -445,26 +445,122 @@ class MagicCircle:
     return ans
 \end{lstlisting}
 
+出力された結果を、ふるいにかける仕掛け
+
+\begin{lstlisting}[language=Python]
+  def evaluate(self, sampleset, prn=True):
+    # Extract sample solutions, energies, and sort them by frequency
+    samples = sampleset.record['sample']
+    energies = sampleset.record['energy']
+    # Combine solutions and corresponding energies
+    sample_data = [(tuple(sample), energy) for sample, energy in zip(samples, energies)]
+    # Sort the results by appearance frequency and then energy
+    sample_frequency = Counter(sample for sample, _ in sample_data)
+    # Print sorted results by frequency and include energy
+    if prn:
+        print("\nSorted samples by frequency and energy:")
+        for solution, freq in sample_frequency.most_common():
+            energy = next(energy for sample, energy in sample_data if sample == solution)
+            print(f"Sample: {solution}, Frequency: {freq}, Energy: {energy:+.2f}")
+    return sample_data, sample_frequency
+
+  def check1(self, a):
+    N, M, _, _ = self.get_param()
+    b = np.array(a).reshape(M, M)
+    for i in range(M):
+        s = 0
+        for j in range(M):
+            s += b[i][j]
+        if s!=1:
+            return False
+    for j in range(M):
+        s = 0
+        for i in range(M):
+            s += b[i][j]
+        if s!=1:
+            return False
+    return True
+
+  def check2(self, a):
+    N, M, S, _ = self.get_param()
+    b = np.array(a).reshape(N, N)
+    for i in range(N):
+        s = 0
+        for j in range(N):
+            s += b[i][j]
+        if s!= S:
+            return False
+    #
+    for j in range(N):
+        s = 0
+        for i in range(N):
+            s += b[i][j]
+        if s!= S:
+            return False
+    #
+    s = 0
+    for i in range(N):
+        for j in range(N):
+            if i==j:
+                s += b[i][j]
+    if s!=S:
+        return False
+    #
+    s = 0
+    for i in range(N):
+        k = N-i-1
+        s += b[i][k]
+    if s!=S:
+        return False
+    #
+    return True
+
+  def decode(self, a):
+    N, M, _, _ = self.get_param()
+    b = np.array(a).reshape(M, M)
+    mat = []
+    for i in range(M):
+        for j in range(M):
+            if b[i][j]==1:
+                mat.append(j+1)
+    return mat
+\end{lstlisting}
+
 \subsection{main}
 
 \begin{lstlisting}[language=Python]
 if __name__ == '__main__':
-  mc = MagicCircle(3)
-  Q = mc.f(10.0, 10.0, 1.0)
-  num_reads = 1000
+  N = 3
+  mc = MagicCircle(N)
+  lagrange1 = 10.0
+  lagrange2 = 10.0
+  lagrange3 =  1.0
+  Q = mc.f(lagrange1, lagrange2, lagrange3)
+  num_reads = 10000
   sampleset = mc.solv(Q, num_reads)
-  ans = mc.result(sampleset)
-  print(*ans, sep='\n')
+  #ans = mc.result(sampleset)
+  #print(*ans, sep='\n')
+  #
+  for sample in sampleset.record['sample']:
+      if mc.check1(sample):
+          a = mc.decode(sample)
+          if mc.check2(a):
+              print(np.array(a).reshape(N, N))
+              print()
 \end{lstlisting}
 
-\newpage
+%\newpage
 
 \section{実行結果}
 
 \begin{verbatim}
-  [6, 7, 2]
-  [1, 5, 9]
-  [8, 3, 4]
+[[6 7 2]
+ [1 5 9]
+ [8 3 4]]
+
+[[4 3 8]
+ [9 5 1]
+ [2 7 6]]
 \end{verbatim}
 
 \section{全体プログラム}
