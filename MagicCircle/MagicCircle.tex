@@ -292,6 +292,18 @@ $\rightarrow \sum_{cell=1,5,9}(\sum_{i=1}^9 i\times q_{i+(cell-1)\times9})=15 $\
 
 \section{式の展開と実装}
 
+\begin{itemize}
+\item 式を展開する上で留意する点は次の2点だけ
+  \begin{itemize}
+  \item[(1)] $0$か$1$の何れかの値しかとらない二値変数の場合$q^2=q$が成り立つ
+  \item[(2)] 定数は最小化に関係ないので無視できる
+  \end{itemize}
+\item 展開した制約式に現れる$\sum$を、そのままfor文の繰り返しに移せばQUBOを生成できる
+\item QUBOができたら、それを量子コンピュータのシミュレータである、SASampler()あるいはSQASampler()の第1引数に渡してあげると、計算結果のsamplesetを受け取ることができる
+\item 数式上で$N$個の数値を$\sum_{i=1}^N$の様に扱っていても、プログラム上の始まりの値は$0$なので、全部で$N$個の数値をfor文で繰り返すとなると、終わりの値は$N-1$になる
+\item また、魔方陣の盤面に置く数値は$0\sim 9$の$10$個ではなくて、$1\sim 9$の$9$個である事にも注意してプログラムする必要がある
+\end{itemize}
+
 \subsection{class}
 
 \begin{lstlisting}[language=Python]
@@ -320,8 +332,7 @@ class MagicCircle:
       return self.N, self.M, self.S, self.idx
 \end{lstlisting}
 
-
-\subsection{制約：f1}
+\subsection{制約：$f_1$}
 
 各セルの中では$1\sim 9$の中のどれか1つだけが1になる（セルに2つ以上の数値は入らない）
 
@@ -346,7 +357,7 @@ class MagicCircle:
     return Q
 \end{lstlisting}
 
-\subsection{制約：f2}
+\subsection{制約：$f_2$}
 
 あるセルの数値と同じ数値は、他のセルには入らない
 
@@ -372,7 +383,7 @@ class MagicCircle:
     return Q
 \end{lstlisting}
 
-\subsection{制約：f3}
+\subsection{制約：$f_3$}
 
 いずれの行方向の数値の和も同じ値$S$になる
 
@@ -398,7 +409,7 @@ class MagicCircle:
     return Q
 \end{lstlisting}
 
-\subsection{制約：f4}
+\subsection{制約：$f_4$}
 
 いずれの列方向の数値の和も同じ値$S$になる
 
@@ -425,7 +436,7 @@ class MagicCircle:
     return Q
 \end{lstlisting}
 
-\subsection{制約：f5}
+\subsection{制約：$f_5$}
 
 右下がりの対角要素の和と右上がりの対角要素の和も同じ値$S$になる
 
@@ -450,7 +461,7 @@ class MagicCircle:
     return Q
 \end{lstlisting}
 
-\subsection{評価関数：f}
+\subsection{評価関数：$f$}
 
 \begin{eqnarray*}
   f = \lambda_1\cdot f_1 + \lambda_2\cdot f_2 + \lambda_3\cdot(f_3 + f_4 + f_5)
@@ -481,6 +492,8 @@ class MagicCircle:
                     ans[i][j] = n+1
     return ans
 \end{lstlisting}
+
+\subsubsection{出力結果のチェック}
 
 出力された結果を、ふるいにかける仕掛け
 
@@ -590,7 +603,7 @@ if __name__ == '__main__':
 
 \section{実行結果}
 
-複数出力されているのは、対称な形をチェックしていないため
+複数出力されているのは、対称な形をチェックしていないため\\（上の解を、時計方向に180度回転させると、下の解と一致している）
 
 \begin{verbatim}
 [[6 7 2]
@@ -602,7 +615,7 @@ if __name__ == '__main__':
  [2 7 6]]
 \end{verbatim}
 
-\section{全体プログラム}
+\section{プログラムの全体}
 
 \lstinputlisting[caption=魔方陣,label=p01]{MagicCircle.py}
 
