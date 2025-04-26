@@ -430,7 +430,6 @@ class MagicCircle:
 
   def f4(self, L, Q):
     N, _, _, _ = self.get_param()
-    Q = defaultdict(lambda: 0)
     for j in range(N):
         self.sub4(j, L, Q)
     return Q
@@ -449,7 +448,6 @@ class MagicCircle:
 \begin{lstlisting}[language=Python]
   def f5(self, L, Q):
     N, M, S, idx = self.get_param()
-    Q = defaultdict(lambda: 0)
     for d1 in range(N):
         for n1 in range(M):
             Q[(idx[(d1, d1, n1)], idx[(d1, d1, n1)])] -= 2.0*(n1+1)*S*L
@@ -603,16 +601,34 @@ if __name__ == '__main__':
 
 \section{実行結果}
 
-複数出力されているのは、対称な形をチェックしていないため\\（上の解を、時計方向に180度回転させると、下の解と一致している）
+複数出力されているのは、対称な形をチェックしていないため
 
 \begin{verbatim}
-[[6 7 2]
- [1 5 9]
- [8 3 4]]
+  [[2 9 4]
+  [7 5 3]
+  [6 1 8]]
 
-[[4 3 8]
- [9 5 1]
- [2 7 6]]
+ [[6 1 8]
+  [7 5 3]
+  [2 9 4]]
+
+ [[2 7 6]
+  [9 5 1]
+  [4 3 8]]
+
+ [[8 1 6]
+  [3 5 7]
+  [4 9 2]]
+
+ [[2 9 4]
+  [7 5 3]
+  [6 1 8]]
+
+ [[6 7 2]
+  [1 5 9]
+  [8 3 4]]
+
+ プロセスは終了コード 0 で終了しました
 \end{verbatim}
 
 \section{プログラムの全体}

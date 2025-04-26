@@ -75,14 +75,12 @@ class MagicCircle:
 
     def f4(self, L, Q):
         N, _, _, _ = self.get_param()
-        Q = defaultdict(lambda: 0)
         for j in range(N):
             self.sub4(j, L, Q)
         return Q
 
     def f5(self, L, Q):
         N, M, S, idx = self.get_param()
-        Q = defaultdict(lambda: 0)
         for d1 in range(N):
             for n1 in range(M):
                 Q[(idx[(d1, d1, n1)], idx[(d1, d1, n1)])] -= 2.0 * (n1+1) * S * L
@@ -201,7 +199,7 @@ if __name__ == '__main__':
     lagrange2 = 10.0
     lagrange3 =  1.0
     Q = mc.f(lagrange1, lagrange2, lagrange3)
-    num_reads = 10000
+    num_reads = 1000
     sampleset = mc.solv(Q, num_reads)
     #ans = mc.result(sampleset)
     #print(*ans, sep='\n')
@@ -212,4 +210,3 @@ if __name__ == '__main__':
             if mc.check2(a):
                 print(np.array(a).reshape(N, N))
                 print()
-
