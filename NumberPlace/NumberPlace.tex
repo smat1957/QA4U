@@ -1,0 +1,763 @@
+% latex uft-8
+\documentclass[uplatex,dvipdfmx,a4paper,11pt,oneside,openany]{jsbook}
+%
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{bm}
+\usepackage{physics}
+\usepackage{graphicx}
+\usepackage{ascmac}
+\usepackage{amsmath}
+\usepackage{setspace}
+\usepackage{here}
+\usepackage{fancybox}
+\usepackage{url}
+\usepackage{listings,jlisting} %日本語のコメントアウトをする場合jlistingが必要
+\usepackage{xcolor}
+\usepackage{comment}
+\usepackage{multicol}
+\usepackage{amsmath, amssymb}
+\usepackage{type1cm}
+\usepackage{booktabs}
+\usepackage{multirow}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+%\begin{comment}
+\lstset{
+  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}; should come as last argument
+  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  deletekeywords={...},            % if you want to delete keywords from the given language
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  firstnumber=1000,                % start line enumeration with line 1000
+  frame=single,	                   % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  language=Octave,                 % the language of the code
+  morekeywords={*,...},            % if you want to add more keywords to the set
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  stepnumber=2,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=2,	                   % sets default tabsize to 2 spaces
+  title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+%\end{comment}
+
+\lstdefinelanguage{mypy}{
+  % リテラルと演算記号
+  morekeywords=[1]{+=,=,==,!=,!,>,<,>=,<=,++,-,+,*,\%,/},
+  % 予約語
+  morekeywords=[2]{False,None,True,and,as,assert,async,await,break,
+    class,continue,def,del,elif,else,except,finally,for,from,global,
+    if,import,in,is,lambda,nonlocal,not,or,pass,raise,return,try,while,
+    with,yield,print,match,case
+  },
+  % 識別子
+  morekeywords=[3]{defined_func},
+  % 区切り文字を強制的に色付け
+  literate=*{.}{{\color{delimiter}.}}1
+            {,}{{\color{delimiter},}}1 {:}{{\color{delimiter}:}}1
+            {)}{{\color{delimiter})}}1 {(}{{\color{delimiter}(}}1
+            {[}{{\color{delimiter}[}}1 {]}{{\color{delimiter}]}}1
+            {\{}{{\color{delimiter}\{}}1 {\}}{{\color{delimiter}\}}}1,
+  % 大文字小文字を区別
+  sensitive=true,
+  % 行コメントの設定
+  morecomment=[l]{\#},
+  % Stringリテラルの設定
+  morestring=[b]{\'},
+  morestring=[b]{\"},
+  % 単語として扱う文字
+  alsoletter={\%<>=+-*\/1234567890!},
+  % 枠
+  frame=none,
+  % 長くなったら途中で改行
+  breaklines=true,
+  % 自動改行時のインデント
+  breakindent=12pt,
+  % 文字間隔を一定に
+  columns=fixed,
+  % 文字の横のサイズを小さく
+  basewidth=0.5em,
+  % 行番号を左に
+  numbers=left,
+  % 行番号の書式
+  numberstyle={\scriptsize\color{white}},
+  % 行番号の増加数は1=連番に
+  stepnumber=1,
+  % フレームの左の余白
+  framexleftmargin=18pt,
+  % スペースを省略せず保持
+  keepspaces=true,
+  % インデントサイズ
+  tabsize=4,
+  backgroundcolor={},                                   % 背景色=透明
+  basicstyle={\small\ttfamily\color{white}},            % 通常部分の書式
+  identifierstyle={\small\color{white}},                % 識別子の書式
+  commentstyle={\small\color{comment}},                 % コメントの書式
+  keywordstyle=[1]{\small\bfseries\color{literal}},     % リテラルと演算記号の書式
+  keywordstyle=[2]{\small\bfseries\color{reserved}},    % 予約語の書式
+  keywordstyle=[3]{\small\bfseries\color{identifier}},  % 自分で定義した識別子の書式
+  stringstyle={\small\ttfamily\color{literal}},         % 文字列の書式
+}
+%ここからソースコードの表示に関する設定
+\lstdefinestyle{customc}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  numbers=left,
+  frame=single,
+  xleftmargin=\parindent,
+  language=C,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{green!40!black},
+  commentstyle=\itshape\color{purple!40!black},
+  identifierstyle=\color{blue},
+  stringstyle=\color{orange},
+}
+
+\lstdefinestyle{custompy}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  numbers=none,
+  frame=l,
+  xleftmargin=\parindent,
+  language=python,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{green!40!black},
+  commentstyle=\itshape\color{purple!40!black},
+  identifierstyle=\color{blue},
+  stringstyle=\color{orange},
+}
+
+\lstdefinestyle{customasm}{
+  belowcaptionskip=1\baselineskip,
+  frame=L,
+  xleftmargin=\parindent,
+  language=[x86masm]Assembler,
+  basicstyle=\footnotesize\ttfamily,
+  commentstyle=\itshape\color{purple!40!black},
+}
+
+\lstset{escapechar=@,style=custompy}
+\renewcommand{\lstlistingname}{プログラム}
+
+\begin{comment}
+\makeatletter
+\def\ps@plainfoot{%
+  \let\@mkboth\@gobbletwo
+  \let\@oddhead\@empty
+  \def\@oddfoot{\normalfont\hfil-- \thepage\ --\hfil}%
+  \let\@evenhead\@empty
+  \let\@evenfoot\@oddfoot}
+  \let\ps@plain\ps@plainfoot
+  \renewcommand{\chapter}{%
+  \if@openright\cleardoublepage\else\clearpage\fi
+  \global\@topnum\z@
+  \secdef\@chapter\@schapter}
+\makeatother
+\end{comment}
+
+%
+\newcommand{\maru}[1]{{\ooalign{%
+\hfil\hbox{$\bigcirc$}\hfil\crcr%
+\hfil\hbox{#1}\hfil}}}
+%
+\setlength{\textwidth}{\fullwidth}
+\setlength{\textheight}{40\baselineskip}
+\addtolength{\textheight}{\topskip}
+\setlength{\voffset}{-0.55in}
+%
+\makeatletter
+\newenvironment{tablehere}
+  {\def\@captype{table}}
+  {}
+\newenvironment{figurehere}
+  {\def\@captype{figure}}
+  {}
+\makeatother
+%
+\title{数独}
+\author{smat1957@gmail.com\thanks{https://altema.is.tohoku.ac.jp/QA4U3/}}
+\date{\today}
+%
+\begin{document}
+
+\maketitle
+
+\chapter{数独を量子アニーリングで解く}
+
+数独は$M\times M$のブロックを、行方向に$M$列分、列方向に$M$行分並べた、全$M\times M=M^2$ブロック、従って$M^2\times M^2$個のセルからなる盤面で、どの行および列についても、また$M\times M$の各ブロックの中においても、同じ数値が2個以上現れてはならないという制約の下、各セルに$1\sim M^2$までの数値を一つずつ入れて盤面を埋めていくクイズ。
+
+\section{問題の構成}
+
+決定変数$q$を各セル毎に$M\times M=M^2$個用意する。$q_{i,j,n}$は、$i$行$j$列目のセル内の$M\times M=M^2$個の決定変数。\\ここで、$i, j, n\;\in\{1, 2, \cdots, M\times M=M^2\}$。
+
+下の表は$3\times3$のブロック1個の例を表している。このブロックが横に3行、縦に3列、全部で9ブロックが並んでいる盤面がよく知られた数独問題になる。
+
+\begin{center}
+\begin{tabular}{|c||c|c| c |c||c|c| c |c||c|c| c |c|} \hline
+  &\multicolumn{4}{|c||}{1列目($j=1$)}&\multicolumn{4}{|c||}{2列目($j=2$)}&\multicolumn{4}{|c|}{3列目($j=3$)}\\\hline\hline
+  \multirow{2}{*}{1行目}&\multicolumn{4}{|c||}{セル($i=1, j=1$)}&\multicolumn{4}{|c||}{セル($i=1, j=2$)}&\multicolumn{4}{|c|}{セル($i=1, j=3$)}\\\cline{2-13}
+  &1&2& $\cdots$ &9& 1&2& $\cdots$ &9& 1&2&$\cdots$ &9 \\\cline{2-13}
+  ($i=1$)&$q_{111}$&$q_{112}$& $\cdots$ &$q_{119}$& $q_{121}$&$q_{122}$&$\cdots$&$q_{129}$& $q_{131}$&$q_{132}$&$\cdots$&$q_{139}$ \\\hline\hline
+  %& & & $\cdots$ & & &  & &$\cdots$& &  & & & $\cdots$ & & \\\hline\hline
+  \multirow{2}{*}{2行目}&\multicolumn{4}{|c||}{セル($i=2, j=1$)}&\multicolumn{4}{|c||}{セル($i=2, j=2$)}&\multicolumn{4}{|c|}{セル($i=2, j=3$)}\\\cline{2-13}
+  &1&2& $\cdots$ &9& 1&2& $\cdots$ &9& 1&2&$\cdots$ &9 \\\cline{2-13}
+  ($i=2$)&$q_{211}$&$q_{212}$& $\cdots$ &$q_{219}$& $q_{221}$&$q_{222}$&$\cdots$&$q_{229}$& $q_{231}$&$q_{232}$&$\cdots$&$q_{239}$ \\\hline\hline
+  %& & & $\cdots$ & & &  & &$\cdots$& &  & & & $\cdots$ & & \\\hline\hline
+  \multirow{2}{*}{3行目}&\multicolumn{4}{|c||}{セル($i=3, j=1$)}&\multicolumn{4}{|c||}{セル($i=3, j=2$)}&\multicolumn{4}{|c|}{セル($i=3, j=3$)}\\\cline{2-13}
+  &1&2& $\cdots$ &9& 1&2& $\cdots$ &9& 1&2&$\cdots$ &9 \\\cline{2-13}
+  ($i=3$)&$q_{311}$&$q_{312}$& $\cdots$ &$q_{319}$& $q_{321}$&$q_{322}$&$\cdots$&$q_{329}$& $q_{331}$&$q_{332}$&$\cdots$&$q_{339}$ \\\hline
+  %& & & $\cdots$  & & &  & &$\cdots$& &  & & & $\cdots$ & & \\\hline
+\end{tabular}
+\end{center}
+
+この決定変数は0か1かの2値変数で、数値$1\sim N$をそのセルに置く（1）か置かない（0）かを表している。
+
+\newpage
+
+制約条件は、次の様に考えることができる。（$M\times M=M^2$を$N$と書く事にする）
+
+\begin{enumerate}
+\item 各セルの中では$q_1\sim q_N$の内でどれか1つだけが1になる（セルに2つ以上の数値は入らない）
+\begin{equation*}
+  f_1 = \sum_i^N\sum_j^N\bigg(\sum_n^N q_{i,j,n} - 1\bigg)^2
+\end{equation*}
+\item 同一の行（列）にあるセルの数値と同じ数値は、同じ行（列）の他のセルには入らない（第1項が行、第2項が列）
+\begin{equation*}
+  f_2 = \sum_i^N\bigg(\sum_n^N\sum_j^N q_{i,j,n} - 1\bigg)^2 + \sum_j^N\bigg(\sum_n^N\sum_i^N q_{i,j,n} - 1\bigg)^2
+\end{equation*}
+\item いずれのブロック（$M\times M$）においても、その中のセルの数値は重複しない
+\begin{eqnarray*}
+  f_3 = \sum_{ブロック先頭セルのi_0,j_0}\bigg(\sum_n^N\sum_x^M\sum_y^M q_{i_0+x-1,j_0+y-1,n} - 1\bigg)^2
+\end{eqnarray*}
+\item いずれの行（列）方向の数値の和も同じ値S($=1+2+\cdots +N$)になる（第1項が行、第2項が列）
+\begin{equation*}
+  f_4 = \sum_i^N\bigg(\sum_j^N\sum_n^N n \cdot q_{i,j,n} - S\bigg)^2 + \sum_j^N\bigg(\sum_i^N\sum_n^N n \cdot q_{i,j,n} - S\bigg)^2
+\end{equation*}
+\item いずれのブロック（$M\times M$）においても、その中のセルの数値の和は同じ値S($=1+2+\cdots +N$)になる
+\begin{eqnarray*}
+  f_5 = \sum_{ブロック先頭セルのi_0,j_0}\bigg(\sum_x^M\sum_y^M\sum_n^N n \cdot q_{i_0+x-1,j_0+y-1,n} - S\bigg)^2
+\end{eqnarray*}
+\item 予め数値$X\in\{1,\cdots,N\}$が決められている$I$行$J$列目のセルがある
+\begin{eqnarray*}
+  f_6 = \sum_{規定のセルI,J}\bigg(\sum_n^N n \cdot q_{I,J,n} - X\bigg)^2
+\end{eqnarray*}
+\end{enumerate}
+
+\subsection{式の展開}
+
+\begin{eqnarray*}
+  f_1 &=& \sum_i^N\sum_j^N\bigg(\sum_n^N q_{i,j,n} - 1\bigg)^2\\
+&=& \sum_i^N\sum_j^N\bigg(\sum_{n_1}^N\sum_{n_2}^N q_{i,j,n_1}q_{i,j,n_2} -2\sum_n^N q_{i,j,n} \bigg)\\
+f_2 &=& \sum_i^N\bigg(\sum_n^N\sum_j^N q_{i,j,n} - 1\bigg)^2 + \sum_j^N\bigg(\sum_n^N\sum_i^N q_{i,j,n} - 1\bigg)^2\\
+&=& \sum_i^N\bigg(\sum_{n_1}^N\sum_{j_1}^Nq_{i,j_1,n_1}\sum_{n_2}^N\sum_{j_2}^Nq_{i,j_2,n_2} - 2\sum_n^N\sum_j^N q_{i,j,n}\bigg)\\
+ &+& \sum_j^N\bigg(\sum_{n_1}^N\sum_{i_1}^Nq_{i_1,j,n_1}\sum_{n_2}^N\sum_{i_2}^Nq_{i_2,j,n_2} - 2\sum_n^N\sum_i^N q_{i,j,n}\bigg)\\
+ f_3 &=& \sum_{ブロック先頭セルのi_0,j_0}\bigg(\sum_n^N\sum_x^M\sum_y^M q_{i_0+x-1,j_0+y-1,n} - 1\bigg)^2\\
+ &=& \sum_{ブロック先頭セルのi_0,j_0}\bigg(\sum_{n_1}^N\sum_{x_1}^M\sum_{y_1}^M q_{i_0+x_1-1,j_0
+ +y_1-1,n_1} \sum_{n_2}^N\sum_{x_2}^M\sum_{y_2}^M q_{i_0+x_2-1,j_0
+ +y_2-1,n_2}\\
+  &-& 2\sum_n^N\sum_x^M\sum_y^M q_{i_0+x-1,j_0+y-1,n}\bigg)\\
+ f_4 &=& \sum_i^N\bigg(\sum_j^N\sum_n^N n \cdot q_{i,j,n} - S\bigg)^2 + \sum_j^N\bigg(\sum_i^N\sum_n^N n \cdot q_{i,j,n} - S\bigg)^2\\
+ &=& \sum_i^N\bigg(\sum_{j_1}^N\sum_{n_1}^N n_1 q_{i,j_1,n_1}\sum_{j_2}^N\sum_{n_2}^N n_2 q_{i,j_2,n_2} -2S\sum_j^N\sum_n^N n q_{i,j,n}\bigg)\\
+ &+& \sum_j^N\bigg(\sum_{i_1}^N\sum_{n_1}^N n_1 q_{i_1,j,n_1}\sum_{i_2}^N\sum_{n_2}^N n_2 q_{i_2,j,n_2} -2S\sum_i^N\sum_n^N n q_{i,j,n}\bigg)\\
+ f_5 &=& \sum_{ブロック先頭セルのi_0,j_0}\bigg(\sum_x^M\sum_y^M\sum_n^N n \cdot q_{i_0+x-1,j_0+y-1,n} - S\bigg)^2\\
+ &=& \sum_{ブロック先頭セルのi_0,j_0}\bigg(\sum_{x_1}^M\sum_{y_1}^M\sum_{n_1}^N n_1 q_{i_0+x_1-1,j_0+y_1-1,n_1}\sum_{x_2}^M\sum_{y_2}^M\sum_{n_2}^N n_2 q_{i_0+x_2-1,j_0+y_2-1,n_2}\\
+  &-& 2S\sum_x^M\sum_y^M\sum_n^N n q_{i_0+x-1,j_0+y-1}\bigg)\\
+ f_6 &=& \sum_{規定のセルI,J}\bigg(\sum_n^N n \cdot q_{I,J,n} - X\bigg)^2\\
+ &=& \sum_{規定セルのI,J}\bigg(\sum_{n_1}^N n_1 q_{I,J,n_1}\sum_{n_2}^N n_2 q_{I,J,n_2} - 2X\sum_n^N n q_{I,J,n}\bigg)
+\end{eqnarray*}
+
+\section{式の展開と実装}
+
+\begin{itemize}
+\item 式を展開する上で留意する点は次の2点だけ
+  \begin{itemize}
+  \item[(1)] $0$か$1$の何れかの値しかとらない二値変数の場合$q^2=q$が成り立つ
+  \item[(2)] 定数は最小化に関係ないので無視できる
+  \end{itemize}
+\item 展開した制約式に現れる$\sum$を、そのままfor文の繰り返しに移せばQUBOを生成できる
+\item QUBOができたら、それを量子コンピュータのシミュレータである、SASampler()あるいはSQASampler()の第1引数に渡してあげると、計算結果のsamplesetを受け取ることができる
+\item 数式上で$N$個の数値を$\sum_{i=1}^N$の様に扱っていても、プログラム上の始まりの値は$0$なので、全部で$N$個の数値をfor文で繰り返すとなると、終わりの値は$N-1$になる
+\item また、魔方陣の盤面に置く数値は$0\sim 9$の$10$個ではなくて、$1\sim 9$の$9$個である事にも注意してプログラムする必要がある
+\end{itemize}
+
+\subsection{class}
+
+\begin{lstlisting}[language=Python]
+from openjij import SASampler, SQASampler
+from collections import defaultdict, Counter
+import numpy as np
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+class NumberPlace:
+  def __init__(self, M=2):
+      self.M = M
+      self.N = M * M
+      S = 0
+      for i in range(1, self.N+1):
+          S += i
+      self.S = S
+      with open('data.txt', 'r') as f:
+          self.required = f.read().splitlines()
+      self.idx = {}
+      k = 0
+      for i in range(self.N):
+          for j in range(self.N):
+              for n in range(self.N):
+                  self.idx[(i,j,n)] = k
+                  k += 1
+      samplers = [SASampler(), SQASampler()]
+      self.sampler = samplers[0]
+
+  def get_param(self):
+      return self.N, self.M, self.S, self.idx
+
+  def block_ij(self):
+      i0j0 = []
+      for i in range(self.M):
+          i0j0.append(self.M*i)
+      return i0j0
+\end{lstlisting}
+
+\begin{verbatim}
+  ブロック先頭セルの$i_0, j_0$は、
+  $M=2$なら [(0,0),(0,2)],
+            [(2,0),(2,2)]
+  $M=3$なら [(0,0),(0,3),(0,6)],
+            [(3,0),(3,3),(3,6)],
+            [(6,0),(6,3),(6,6)]
+  $M=2$なら [(M*0,M*0),(M*0,M*1)],
+            [(M*1,M*0),(M*1,M*1)]
+  $M=3$なら [(M*0,M*0),(M*0,M*1),(M*0,M*2)],
+            [(M*1,M*0),(M*1,M*1),(M*1,M*2)],
+            [(M*2,M*0),(M*2,M*1),(M*2,M*2)]
+\end{verbatim}
+
+\subsection{制約：$f_1$}
+
+各セルの中では$q_1\sim q_N$の内でどれか1つだけが1になる（セルに2つ以上の数値は入らない）
+
+\begin{eqnarray*}
+  f_1 &=& \sum_i^N\sum_j^N\bigg(\sum_n^N q_{i,j,n} - 1\bigg)^2\\
+  &=& \sum_i^N\sum_j^N\bigg(\sum_{n_1}^N\sum_{n_2}^N q_{i,j,n_1}q_{i,j,n_2} -2\sum_n^N q_{i,j,n} \bigg)
+\end{eqnarray*}
+
+\begin{lstlisting}[language=Python]
+  def sub1(self, i, j, L, Q):
+    N, _, _, idx = self.get_param()
+    for n1 in range(N):
+        Q[(idx[(i, j, n1)], idx[(i, j, n1)])] -= 2.0 * L
+        for n2 in range(N):
+            Q[(idx[(i, j, n1)], idx[(i, j, n2)])] += 1.0 * L
+
+  def f1(self, L, Q):
+    N, _, _, _ = self.get_param()
+    for i in range(N):
+        for j in range(N):
+            self.sub1(i, j, L, Q)
+    return Q
+\end{lstlisting}
+
+\subsection{制約：$f_2$}
+
+同一の行（列）にあるセルの数値と同じ数値は、同じ行（列）の他のセルには入らない（第1項が行、第2項が列）
+
+\begin{eqnarray*}
+  f_2 &=& \sum_i^N\bigg(\sum_n^N\sum_j^N q_{i,j,n} - 1\bigg)^2 + \sum_j^N\bigg(\sum_n^N\sum_i^N q_{i,j,n} - 1\bigg)^2\\
+  &=& \sum_i^N\bigg(\sum_{n_1}^N\sum_{j_1}^Nq_{i,j_1,n_1}\sum_{n_2}^N\sum_{j_2}^Nq_{i,j_2,n_2} - 2\sum_n^N\sum_j^N q_{i,j,n}\bigg)\\
+   &+& \sum_j^N\bigg(\sum_{n_1}^N\sum_{i_1}^Nq_{i_1,j,n_1}\sum_{n_2}^N\sum_{i_2}^Nq_{i_2,j,n_2} - 2\sum_n^N\sum_i^N q_{i,j,n}\bigg)
+\end{eqnarray*}
+
+\begin{lstlisting}[language=Python]
+  def sub2R(self, i, L, Q):
+    N, _, _, idx = self.get_param()
+    for n1 in range(N):
+        for j1 in range(N):
+            Q[(idx[(i, j1, n1)], idx[(i, j1, n1)])] -= 2.0 * L
+            for n2 in range(N):
+                for j2 in range(N):
+                    Q[(idx[(i, j1, n1)], idx[(i, j2, n2)])] += 1.0 * L
+
+  def sub2C(self, j, L, Q):
+    N, _, _, idx = self.get_param()
+    for n1 in range(N):
+        for i1 in range(N):
+            Q[(idx[(i1, j, n1)], idx[(i1, j, n1)])] -= 2.0 * L
+            for n2 in range(N):
+                for i2 in range(N):
+                    Q[(idx[(i1, j, n1)], idx[(i2, j, n2)])] += 1.0 * L
+
+  def f2(self, L, Q):
+    N, _, _, _ = self.get_param()
+    for i in range(N):
+        self.sub2R(i, L, Q)
+    for j in range(N):
+        self.sub2C(j, L, Q)
+    return Q
+\end{lstlisting}
+
+\subsection{制約：$f_3$}
+
+いずれのブロック（$M\times M$）においても、その中のセルの数値は重複しない
+
+\begin{eqnarray*}
+  f_3 &=& \sum_{ブロック先頭セルのi_0,j_0}\bigg(\sum_n^N\sum_x^M\sum_y^M q_{i_0+x-1,j_0+y-1,n} - 1\bigg)^2\\
+  &=& \sum_{ブロック先頭セルのi_0,j_0}\bigg(\sum_{n_1}^N\sum_{x_1}^M\sum_{y_1}^M q_{i_0+x_1-1,j_0
+  +y_1-1,n_1} \sum_{n_2}^N\sum_{x_2}^M\sum_{y_2}^M q_{i_0+x_2-1,j_0
+  +y_2-1,n_2}\\
+   &-& 2\sum_n^N\sum_x^M\sum_y^M q_{i_0+x-1,j_0+y-1,n}\bigg)
+\end{eqnarray*}
+
+\begin{lstlisting}[language=Python]
+  def sub3(self, i0, j0, L, Q):
+    N, M, _, idx = self.get_param()
+    for n1 in range(N):
+        for x1 in range(M):
+            for y1 in range(M):
+                Q[(idx[(i0+x1, j0+y1 ,n1)], idx[(i0+x1, j0+y1, n1)])] -= 2.0 * L
+                for n2 in range(N):
+                    for x2 in range(M):
+                        for y2 in range(M):
+                            Q[(idx[(i0+x1, j0+y1, n1)], idx[(i0+x2, j0+y2, n2)])] += L
+
+  def f3(self, L, Q):
+    i0j0 = self.block_ij()
+    for i0 in i0j0:
+        for j0 in i0j0:
+            self.sub3(i0, j0, L, Q)
+    return Q
+\end{lstlisting}
+
+\subsection{制約：$f_4$}
+
+いずれの行（列）方向の数値の和も同じ値S($=1+2+\cdots +N$)になる（第1項が行、第2項が列）
+
+\begin{eqnarray*}
+  f_4 &=& \sum_i^N\bigg(\sum_j^N\sum_n^N n \cdot q_{i,j,n} - S\bigg)^2 + \sum_j^N\bigg(\sum_i^N\sum_n^N n \cdot q_{i,j,n} - S\bigg)^2\\
+  &=& \sum_i^N\bigg(\sum_{j_1}^N\sum_{n_1}^N n_1 q_{i,j_1,n_1}\sum_{j_2}^N\sum_{n_2}^N n_2 q_{i,j_2,n_2} -2S\sum_j^N\sum_n^N n q_{i,j,n}\bigg)\\
+  &+& \sum_j^N\bigg(\sum_{i_1}^N\sum_{n_1}^N n_1 q_{i_1,j,n_1}\sum_{i_2}^N\sum_{n_2}^N n_2 q_{i_2,j,n_2} -2S\sum_i^N\sum_n^N n q_{i,j,n}\bigg)
+\end{eqnarray*}
+
+\begin{lstlisting}[language=Python]
+  def sub4R(self, i, L, Q):
+    N, _, S, idx = self.get_param()
+    for j1 in range(N):
+        for n1 in range(N):
+            Q[(idx[(i, j1, n1)], idx[(i, j1, n1)])] -= 2.0 * (n1+1) * S * L
+            for j2 in range(N):
+                for n2 in range(N):
+                    Q[(idx[(i, j1, n1)], idx[(i, j2, n2)])] += (n1+1) * (n2+1) * L
+
+  def sub4C(self, j, L, Q):
+    N, _, S, idx = self.get_param()
+    for i1 in range(N):
+        for n1 in range(N):
+            Q[(idx[(i1, j, n1)], idx[(i1, j, n1)])] -= 2.0 * (n1+1) * S * L
+            for i2 in range(N):
+                for n2 in range(N):
+                    Q[(idx[(i1, j, n1)], idx[(i2, j, n2)])] += (n1+1) * (n2+1) * L
+
+  def f4(self, L, Q):
+    N, _, _, _ = self.get_param()
+    for i in range(N):
+        self.sub4R(i, L, Q)
+    for j in range(N):
+        self.sub4C(j, L, Q)
+    return Q
+\end{lstlisting}
+
+\subsection{制約：$f_5$}
+
+いずれのブロック（$M\times M$）においても、その中のセルの数値の和は同じ値S($=1+2+\cdots +N$)になる
+
+\begin{eqnarray*}
+  f_5 &=& \sum_{ブロック先頭セルのi_0,j_0}\bigg(\sum_x^M\sum_y^M\sum_n^N n \cdot q_{i_0+x-1,j_0+y-1,n} - S\bigg)^2\\
+  &=& \sum_{ブロック先頭セルのi_0,j_0}\bigg(\sum_{x_1}^M\sum_{y_1}^M\sum_{n_1}^N n_1 q_{i_0+x_1-1,j_0+y_1-1,n_1}\sum_{x_2}^M\sum_{y_2}^M\sum_{n_2}^N n_2 q_{i_0+x_2-1,j_0+y_2-1,n_2}\\
+   &-& 2S\sum_x^M\sum_y^M\sum_n^N n q_{i_0+x-1,j_0+y-1}\bigg)
+\end{eqnarray*}
+
+\begin{lstlisting}[language=Python]
+  def sub5(self, i0, j0, L, Q):
+    N, M, S, idx = self.get_param()
+    for x1 in range(M):
+        for y1 in range(M):
+            for n1 in range(N):
+                Q[(idx[(i0+x1, j0+y1, n1)], idx[(i0+x1, j0+y1, n1)])] -= 2.0 * (n1+1) * S * L
+                for x2 in range(M):
+                    for y2 in range(M):
+                        for n2 in range(N):
+                            Q[(idx[(i0+x1, j0+y1, n1)], idx[(i0+x2, j0+y2, n2)])] -= (n1+1) * (n2+1) * L
+
+  def f5(self, L, Q):
+    i0j0 = self.block_ij()
+    for i0 in i0j0:
+        for j0 in i0j0:
+            self.sub5(i0, j0, L, Q)
+    return Q
+\end{lstlisting}
+
+\subsection{制約：$f_6$}
+
+予め数値$X\in\{1,\cdots,N\}$が決められている$I$行$J$列目のセルがある
+
+\begin{eqnarray*}
+  f_6 &=& \sum_{規定のセルI,J}\bigg(\sum_n^N n \cdot q_{I,J,n} - X\bigg)^2\\
+ &=& \sum_{規定セルのI,J}\bigg(\sum_{n_1}^N n_1 q_{I,J,n_1}\sum_{n_2}^N n_2 q_{I,J,n_2} - 2X\sum_n^N n q_{I,J,n}\bigg)
+\end{eqnarray*}
+
+\begin{lstlisting}[language=Python]
+  def f6(self, I, J, X, L, Q):
+    N, _, _, idx = self.get_param()
+    for n1 in range(N):
+        Q[(idx[(I, J, n1)], idx[(I, J, n1)])] -= 2 * (n1+1) * X * L
+        for n2 in range(N):
+            Q[(idx[(I, J, n1)], idx[(I, J, n2)])] += (n1+1) * (n2+1) * L
+    return Q
+\end{lstlisting}
+
+\subsection{評価関数：$f$}
+
+\begin{eqnarray*}
+  f = \lambda_1\cdot f_1 + \lambda_2\cdot(f_2 + f_3) + \lambda_3\cdot(f_4 + f_5) + \lambda_4\cdot (\sum_{規定}f_6)
+\end{eqnarray*}
+
+\begin{lstlisting}[language=Python]
+  def f(self, lagrange1=1.0, lagrange2=1.0, lagrange3=1.0, lagrange4=1.0):
+    Q = defaultdict(lambda: 0)
+    _ = self.f1(lagrange1, Q)
+    _ = self.f2(lagrange2, Q)
+    _ = self.f3(lagrange2, Q)
+    _ = self.f4(lagrange3, Q)
+    _ = self.f5(lagrange3, Q)
+    for a in self.required:
+        IJX = a.split(',')
+        _ = self.f6(int(IJX[0]), int(IJX[1]), int(IJX[2]), lagrange4, Q)
+    return Q
+
+  def solv(self, Q, num_reads=1):
+    sampleset = self.sampler.sample_qubo(Q, num_reads=num_reads)
+    return sampleset
+
+  def result(self, sampleset):
+    N, _, _, idx = self.get_param()
+    result = [i for i in sampleset.first[0].values()]
+    ans = [[None] * N for _ in range(N)]
+    for i in range(N):
+        for j in range(N):
+            for n in range(N):
+                if result[idx[(i,j,n)]] == 1:
+                    ans[i][j] = n+1
+    return ans
+\end{lstlisting}
+
+\subsubsection{出力結果のチェック}
+
+出力された結果を、ふるいにかける仕掛け
+
+\begin{lstlisting}[language=Python]
+  def evaluate(self, sampleset, prn=True):
+    # Extract sample solutions, energies, and sort them by frequency
+    samples = sampleset.record['sample']
+    energies = sampleset.record['energy']
+    # Combine solutions and corresponding energies
+    sample_data = [(tuple(sample), energy) for sample, energy in zip(samples, energies)]
+    # Sort the results by appearance frequency and then energy
+    sample_frequency = Counter(sample for sample, _ in sample_data)
+    # Print sorted results by frequency and include energy
+    if prn:
+        print("\nSorted samples by frequency and energy:")
+        for solution, freq in sample_frequency.most_common():
+            energy = next(energy for sample, energy in sample_data if sample == solution)
+            print(f"Sample: {solution}, Frequency: {freq}, Energy: {energy:+.2f}")
+    return sample_data, sample_frequency
+
+  def check1(self, a, debug=False):
+    N, M, _, _ = self.get_param()
+    b = np.array(a).reshape(N*N, N)
+    # 各セルに数値は1つ？
+    for i in range(N*N):
+        s = 0
+        for n in range(N):
+            s += b[i][n]
+        if s != 1:
+            if debug:
+                print(f'!: セルの中の数値が1つになっていない')
+            return False
+    # 各ブロックに重複する数値はない？
+    i0j0 = self.block_ij()
+    for i in i0j0:
+        for j in i0j0:
+            for n in range(N):
+                s = 0
+                for x in range(M):
+                    for y in range(M):
+                        bidx = (i+x)*N + j+y
+                        s += b[bidx][n]
+                if s != 1:
+                    if debug:
+                        print(f'!: ブロック内で数値が重複')
+                    return False
+    #
+    for n in range(N):
+        # 各行に重複する数値はない？
+        for i in range(N):
+            s = 0
+            for j in range(N):
+                bidx = i * N + j
+                s += b[bidx][n]
+            if s != 1:
+                if debug:
+                    print(f'!: 行で数値が重複')
+                return False
+        # 各列に重複する数値はない？
+        for j in range(N):
+            s = 0
+            for i in range(N):
+                bidx = i * N + j
+                s += b[bidx][n]
+            if s != 1:
+                if debug:
+                    print(f'!: 列で数値が重複')
+                return False
+    #
+    return True
+
+  def check2(self, a, debug=False):
+    N, M, S, _ = self.get_param()
+    b = np.array(a).reshape(N, N)
+    # 規定値は正しい？
+    for a in self.required:
+        IJX = a.split(',')
+        if b[int(IJX[0])][int(IJX[1])]!=int(IJX[2]):
+            if debug:
+                print('!: 規定値が違っている')
+            return False
+    # 各行の数値の和はS？
+    for i in range(N):
+        s = 0
+        for j in range(N):
+            s += b[i][j]
+        if s != S:
+            if debug:
+                print(f'!: 行の総和＝{s}!={S}')
+            return False
+    # 各列の数値の和はS？
+    for j in range(N):
+        s = 0
+        for i in range(N):
+            s += b[i][j]
+        if s != S:
+            if debug:
+                print(f'!: 列の総和＝{s}!={S}')
+            return False
+    # 各ブロックの数値の和はS？
+    i0j0 = self.block_ij()
+    for i in i0j0:
+        for j in i0j0:
+            s = 0
+            for x in range(M):
+                for y in range(M):
+                    #print(i+x,j+y)
+                    s += b[i+x][j+y]
+            if s != 1:
+                if debug:
+                    print(f'!: ブロック内の総和＝{s}!={S}')
+                return False
+    #
+    return True
+
+  def decode(self, a):
+    N, M, _, _ = self.get_param()
+    b = np.array(a).reshape(N**2, N)
+    print(b)
+    mat = []
+    for v in b:
+        num = 0
+        for i, u in enumerate(v):
+            if u==1:
+                num = i+1
+        mat.append(num)
+    return mat
+\end{lstlisting}
+
+\subsection{main}
+
+\begin{lstlisting}[language=Python]
+if __name__ == '__main__':
+  M = 2
+  N = M*M
+  sudoku = NumberPlace(M)
+  lagrange1 = 500    # 数値に重複なし
+  lagrange2 = 26.3    # 行、列、ブロック、で重複なし
+  lagrange3 = 0.001    # 和はS
+  lagrange4 = 20.0    # 規定セル
+  Q = sudoku.f(lagrange1, lagrange2, lagrange3, lagrange4)
+  num_reads = 1000
+  sampleset = sudoku.solv(Q, num_reads)
+  ans = sudoku.result(sampleset)
+  print(*ans, sep='\n')
+  #
+  for sample in sampleset.record['sample']:
+      if sudoku.check1(sample, False):
+          a = sudoku.decode(sample)
+          if sudoku.check2(a, False):
+              print(np.array(a).reshape(N, N))
+              print()
+\end{lstlisting}
+
+%\newpage
+
+\section{実行結果}
+
+規定セルの値：data.txt
+\begin{verbatim}
+  0, 1, 1
+  1, 0, 2
+  3, 0, 4
+  3, 3, 1
+\end{verbatim}
+
+期待したのは次の状態
+\begin{verbatim}
+  [3, 1, 4, 2]
+  [2, 4, 1, 3]
+  [1, 2, 3, 4]
+  [4, 3, 2, 1]
+\end{verbatim}
+
+実行結果は次の通り。満足できる結果になっていない
+\begin{verbatim}
+  [1, 1, 4, 4]
+  [2, 4, 4, 3]
+  [3, 2, 4, 1]
+  [4, 4, 4, 1]
+\end{verbatim}
+
+\section{プログラムの全体}
+
+\lstinputlisting[caption=数独,label=p01]{NumberPlace.py}
+
+\begin{thebibliography}{9}
+  \bibitem{b1} 西森秀稔、大関真之, 量子アニーリングの基礎, 共立出版
+  \bibitem{b2} \url{https://amplify.fixstars.com/ja/techresources/application/sudoku/}
+  \bibitem{b3} \url{https://zenn.dev/airev/articles/airev-quantum-02}
+\end{thebibliography}
+
+\end{document}
