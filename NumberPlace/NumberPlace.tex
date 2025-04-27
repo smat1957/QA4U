@@ -435,7 +435,7 @@ class NumberPlace:
                 for n2 in range(N):
                     for x2 in range(M):
                         for y2 in range(M):
-                            Q[(idx[(i0+x1, j0+y1, n1)], idx[(i0+x2, j0+y2, n2)])] += L
+                            Q[(idx[(i0+x1, j0+y1, n1)], idx[(i0+x2, j0+y2, n2)])] += 1.0 * L
 
   def f3(self, L, Q):
     i0j0 = self.block_ij()
