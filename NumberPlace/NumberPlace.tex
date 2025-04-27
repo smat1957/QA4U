@@ -597,7 +597,7 @@ class NumberPlace:
             s += b[i][n]
         if s != 1:
             if debug:
-                print(f'!: セルの中の数値が1つになっていない')
+                print(f'!: セルの中の数値が1つでない{i:3d}:{b[i]}')
             return False
     # 各ブロックに重複する数値はない？
     i0j0 = self.block_ij()
@@ -646,7 +646,7 @@ class NumberPlace:
         IJX = a.split(',')
         if b[int(IJX[0])][int(IJX[1])]!=int(IJX[2]):
             if debug:
-                print('!: 規定値が違っている')
+                print(f'!: 規定値が違う:({IJX[0]},{IJX[1]}){IJX[2]}!={b[int(IJX[0])][int(IJX[1])]}')
             return False
     # 各行の数値の和はS？
     for i in range(N):
@@ -685,7 +685,7 @@ class NumberPlace:
   def decode(self, a):
     N, M, _, _ = self.get_param()
     b = np.array(a).reshape(N**2, N)
-    print(b)
+    #print(b)
     mat = []
     for v in b:
         num = 0
@@ -695,44 +695,49 @@ class NumberPlace:
         mat.append(num)
     return mat
 
-    def print_shape(self):
-        for i in range(self.N):
-            print(f'{i}:', end='\t')
-            for j in range(self.N):
-                for a in self.required:
-                    IJX = a.split(',')
-                    if i==int(IJX[0]) and j==int(IJX[1]):
-                        print(int(IJX[2]), end=' ')
-                        break
-                else:
-                    print('_', end=' ')
-            print()
+  def print_shape(self):
+    for i in range(self.N):
+        print(f'{i}:', end='\t')
+        for j in range(self.N):
+            for a in self.required:
+                IJX = a.split(',')
+                if i==int(IJX[0]) and j==int(IJX[1]):
+                    print(int(IJX[2]), end=' ')
+                    break
+            else:
+                print('_', end=' ')
+        print()
 \end{lstlisting}
 
 \subsection{main}
 
 \begin{lstlisting}[language=Python]
 if __name__ == '__main__':
-  KiteiF = 'data4.txt'   # KiteiF = 'data9.txt'
-  M = 2                  # M = 3
+  KiteiF = 'data9alt.txt'
+  M = 3
   sudoku = NumberPlace(M, KiteiF)
   sudoku.print_shape()
-  lagrange1 = 40.0      # 数値に重複なし
-  lagrange2 =  5.4      # 行、列、ブロック、で重複なし
-  lagrange3 =  0.0      # 和はS
-  lagrange4 =  5.1      # 規定セル
+  #lagrange1 = 40.0      # 数値に重複なし
+  #lagrange2 =  5.4      # 行、列、ブロック、で重複なし
+  #lagrange3 =  0.0      # 和はS
+  #lagrange4 =  5.1      # 規定セル
+  lagrange1 = 1.0      # 数値に重複なし
+  lagrange2 = lagrange1 * 0.653         # 行、列、ブロック、で重複なし 0.018
+  lagrange3 = lagrange1 * 0.0         # 和はS
+  lagrange4 = lagrange1 * 0.05         # 規定セル
   Q = sudoku.f(lagrange1, lagrange2, lagrange3, lagrange4)
-  num_reads = 10000
+  num_reads = 100
   sampleset = sudoku.solv(Q, num_reads)
   ans = sudoku.result(sampleset)
   print(*ans, sep='\n')
   #
+  debug = True
   for sample in sampleset.record['sample']:
-      if sudoku.check1(sample, False):
-          #print('check1 Passed!')
+      if sudoku.check1(sample, debug):
+          if debug: print('check1 Passed!')
           a = sudoku.decode(sample)
-          if sudoku.check2(a, False):
-              #print('check2 Passed!')
+          if sudoku.check2(a, debug):
+              if debug: print('check2 Passed!')
               print(np.array(a).reshape(M*M, M*M))
               print()
 \end{lstlisting}
@@ -740,6 +745,8 @@ if __name__ == '__main__':
 %\newpage
 
 \section{実行結果}
+
+\subsubsection{→ 4x4 の場合}
 
 規定セルの値：data4.txt
 \begin{verbatim}
@@ -781,6 +788,64 @@ if __name__ == '__main__':
 これで解けていると言えるのか？
 
 （lagrange1 〜 lagrange4 の値のバランスがデリケートだ）
+
+\subsubsection{→ 9x9 の場合}
+
+一度も解に至っていない
+
+\begin{verbatim}
+  0:	8 _ _ 2 _ _ _ 7 _
+  1:	_ _ 1 _ 3 _ 5 _ _
+  2:	_ 9 _ _ _ 6 _ _ _
+  3:	_ _ _ 5 _ _ _ 2 _
+  4:	7 _ _ _ 8 _ _ _ 1
+  5:	_ 6 _ _ _ 2 _ _ _
+  6:	_ _ _ 7 _ _ _ 4 _
+  7:	_ _ 3 _ 1 _ 8 _ _
+  8:	_ 2 _ _ _ 9 _ _ 6
+
+  [5, 4, 7, 1, 8, 9, 2, 6, 3]
+  [8, 3, 1, 6, 5, 2, 4, 7, 9]
+  [2, 9, 6, 7, 3, 4, 5, 1, 8]
+  [1, 8, 4, 5, 9, 6, 3, 2, 7]
+  [6, 5, 2, 4, 7, 3, 9, 8, 1]
+  [9, 7, 3, 8, 2, 1, 6, 4, 5]
+  [7, 2, 8, 9, 6, 5, 1, 3, 4]
+  [4, 6, 5, 3, 1, 7, 8, 9, 2]
+  [3, 1, 9, 2, 4, 8, 7, 5, 6]
+
+  !: 列で数値が重複
+  !: セルの中の数値が1つでない  1:[1 0 0 0 1 0 0 0 0]
+  !: セルの中の数値が1つでない 42:[0 1 0 0 0 1 0 0 0]
+  !: セルの中の数値が1つでない  5:[0 1 0 0 0 0 1 0 0]
+  !: 列で数値が重複
+  !: 行で数値が重複
+  !: 行で数値が重複
+  check1 Passed!
+  !: 規定値が違う:(0, 0) 8!=6
+  !: 列で数値が重複
+  !: セルの中の数値が1つでない  0:[0 1 0 1 0 0 0 0 0]
+  !: 行で数値が重複
+  !: セルの中の数値が1つでない 25:[0 0 0 1 1 0 0 0 0]
+  !: セルの中の数値が1つでない 20:[0 0 0 1 0 0 0 1 0]
+  !: セルの中の数値が1つでない 31:[0 0 0 0 1 0 1 0 0]
+  !: セルの中の数値が1つでない  1:[1 0 1 0 0 0 0 0 0]
+  !: セルの中の数値が1つでない 39:[1 0 0 0 0 0 0 1 0]
+  !: 行で数値が重複
+  !: 行で数値が重複
+  !: セルの中の数値が1つでない  4:[0 0 0 0 1 0 0 1 0]
+  !: セルの中の数値が1つでない 71:[0 0 0 1 0 0 0 1 0]
+  !: セルの中の数値が1つでない 52:[0 0 0 0 1 0 0 0 1]
+  !: 行で数値が重複
+  !: セルの中の数値が1つでない 22:[0 1 0 0 0 0 1 0 0]
+  !: 列で数値が重複
+  !: 列で数値が重複
+  !: セルの中の数値が1つでない 36:[1 0 0 0 1 0 0 0 0]
+  !: セルの中の数値が1つでない 24:[1 0 0 0 0 0 1 0 0]
+  !: セルの中の数値が1つでない 20:[0 0 0 1 1 0 0 0 0]
+  !: セルの中の数値が1つでない 71:[0 0 0 0 0 0 1 1 0]
+  !: 行で数値が重複
+\end{verbatim}
 
 \section{プログラムの全体}
 

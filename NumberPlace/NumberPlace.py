@@ -193,7 +193,7 @@ class NumberPlace:
                 s += b[i][n]
             if s != 1:
                 if debug:
-                    print(f'!: セルの中の数値が1つになっていない')
+                    print(f'!: セルの中の数値が1つでない{i:3d}:{b[i]}')
                 return False
         # 各ブロックに重複する数値はない？
         i0j0 = self.block_ij()
@@ -242,7 +242,7 @@ class NumberPlace:
             IJX = a.split(',')
             if b[int(IJX[0])][int(IJX[1])]!=int(IJX[2]):
                 if debug:
-                    print('!: 規定値が違っている')
+                    print(f'!: 規定値が違う:({IJX[0]},{IJX[1]}){IJX[2]}!={b[int(IJX[0])][int(IJX[1])]}')
                 return False
         # 各行の数値の和はS？
         for i in range(N):
@@ -313,21 +313,22 @@ if __name__ == '__main__':
     #lagrange2 =  5.4      # 行、列、ブロック、で重複なし
     #lagrange3 =  0.0      # 和はS
     #lagrange4 =  5.1      # 規定セル
-    lagrange1 = 100.0      # 数値に重複なし
-    lagrange2 = lagrange1 * 0.821        # 行、列、ブロック、で重複なし 0.018
+    lagrange1 = 1.0      # 数値に重複なし
+    lagrange2 = lagrange1 * 0.653         # 行、列、ブロック、で重複なし 0.018
     lagrange3 = lagrange1 * 0.0         # 和はS
-    lagrange4 = lagrange1 * 2.0         # 規定セル
+    lagrange4 = lagrange1 * 0.05         # 規定セル
     Q = sudoku.f(lagrange1, lagrange2, lagrange3, lagrange4)
     num_reads = 100
     sampleset = sudoku.solv(Q, num_reads)
     ans = sudoku.result(sampleset)
     print(*ans, sep='\n')
     #
+    debug = True
     for sample in sampleset.record['sample']:
-        if sudoku.check1(sample, False):
-            #print('check1 Passed!')
+        if sudoku.check1(sample, debug):
+            if debug: print('check1 Passed!')
             a = sudoku.decode(sample)
-            if sudoku.check2(a, False):
-                #print('check2 Passed!')
+            if sudoku.check2(a, debug):
+                if debug: print('check2 Passed!')
                 print(np.array(a).reshape(M*M, M*M))
                 print()
