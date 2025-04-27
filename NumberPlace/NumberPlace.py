@@ -237,12 +237,12 @@ class NumberPlace:
     def check2(self, a, debug=False):
         N, M, S, _ = self.get_param()
         b = np.array(a).reshape(N, N)
-        # 規定値は正しい？
+        # 既定値は正しい？
         for a in self.required:
             IJX = a.split(',')
             if b[int(IJX[0])][int(IJX[1])]!=int(IJX[2]):
                 if debug:
-                    print(f'!: 規定値が違う:({IJX[0]},{IJX[1]}){IJX[2]}!={b[int(IJX[0])][int(IJX[1])]}')
+                    print(f'!: 既定値が違う:({IJX[0]},{IJX[1]}){IJX[2]}!={b[int(IJX[0])][int(IJX[1])]}')
                 return False
         # 各行の数値の和はS？
         for i in range(N):
@@ -312,11 +312,11 @@ if __name__ == '__main__':
     #lagrange1 = 40.0      # 数値に重複なし
     #lagrange2 =  5.4      # 行、列、ブロック、で重複なし
     #lagrange3 =  0.0      # 和はS
-    #lagrange4 =  5.1      # 規定セル
-    lagrange1 = 1.0      # 数値に重複なし
-    lagrange2 = lagrange1 * 0.653         # 行、列、ブロック、で重複なし 0.018
+    #lagrange4 =  5.1      # 既定セル
+    lagrange1 = 1.0        # 数値に重複なし
+    lagrange2 = lagrange1 * 0.653       # 行、列、ブロック、で重複なし 0.018
     lagrange3 = lagrange1 * 0.0         # 和はS
-    lagrange4 = lagrange1 * 0.05         # 規定セル
+    lagrange4 = lagrange1 * 0.05        # 既定セル
     Q = sudoku.f(lagrange1, lagrange2, lagrange3, lagrange4)
     num_reads = 100
     sampleset = sudoku.solv(Q, num_reads)

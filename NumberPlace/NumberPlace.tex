@@ -256,7 +256,7 @@
 \end{eqnarray*}
 \item 予め数値$X\in\{1,\cdots,N\}$が決められている$I$行$J$列目のセルがある
 \begin{eqnarray*}
-  f_6 = \sum_{規定のセルI,J}\bigg(\sum_n^N n \cdot q_{I,J,n} - X\bigg)^2
+  f_6 = \sum_{既定のセルI,J}\bigg(\sum_n^N n \cdot q_{I,J,n} - X\bigg)^2
 \end{eqnarray*}
 \end{enumerate}
 
@@ -279,8 +279,8 @@ f_2 &=& \sum_i^N\sum_n^N\bigg(\sum_j^N q_{i,j,n} - 1\bigg)^2 + \sum_j^N\sum_n^N\
  f_5 &=& \sum_{ブロック先頭セルのi_0,j_0}\bigg(\sum_x^M\sum_y^M\sum_n^N n \cdot q_{i_0+x-1,j_0+y-1,n} - S\bigg)^2\\
  &=& \sum_{ブロック先頭セルのi_0,j_0}\bigg(\sum_{x_1}^M\sum_{y_1}^M\sum_{n_1}^N n_1 q_{i_0+x_1-1,j_0+y_1-1,n_1}\sum_{x_2}^M\sum_{y_2}^M\sum_{n_2}^N n_2 q_{i_0+x_2-1,j_0+y_2-1,n_2}\\
   &-& 2S\sum_x^M\sum_y^M\sum_n^N n q_{i_0+x-1,j_0+y-1}\bigg)\\
- f_6 &=& \sum_{規定のセルI,J}\bigg(\sum_n^N n \cdot q_{I,J,n} - X\bigg)^2\\
- &=& \sum_{規定セルのI,J}\bigg(\sum_{n_1}^N n_1 q_{I,J,n_1}\sum_{n_2}^N n_2 q_{I,J,n_2} - 2X\sum_n^N n q_{I,J,n}\bigg)
+ f_6 &=& \sum_{既定のセルI,J}\bigg(\sum_n^N n \cdot q_{I,J,n} - X\bigg)^2\\
+ &=& \sum_{既定セルのI,J}\bigg(\sum_{n_1}^N n_1 q_{I,J,n_1}\sum_{n_2}^N n_2 q_{I,J,n_2} - 2X\sum_n^N n q_{I,J,n}\bigg)
 \end{eqnarray*}
 
 \section{式の展開と実装}
@@ -516,8 +516,8 @@ class NumberPlace:
 予め数値$X\in\{1,\cdots,N\}$が決められている$I$行$J$列目のセルがある
 
 \begin{eqnarray*}
-  f_6 &=& \sum_{規定のセルI,J}\bigg(\sum_n^N n \cdot q_{I,J,n} - X\bigg)^2\\
- &=& \sum_{規定セルのI,J}\bigg(\sum_{n_1}^N n_1 q_{I,J,n_1}\sum_{n_2}^N n_2 q_{I,J,n_2} - 2X\sum_n^N n q_{I,J,n}\bigg)
+  f_6 &=& \sum_{既定のセルI,J}\bigg(\sum_n^N n \cdot q_{I,J,n} - X\bigg)^2\\
+ &=& \sum_{既定セルのI,J}\bigg(\sum_{n_1}^N n_1 q_{I,J,n_1}\sum_{n_2}^N n_2 q_{I,J,n_2} - 2X\sum_n^N n q_{I,J,n}\bigg)
 \end{eqnarray*}
 
 \begin{lstlisting}[language=Python]
@@ -533,7 +533,7 @@ class NumberPlace:
 \subsection{評価関数：$f$}
 
 \begin{eqnarray*}
-  f = \lambda_1\cdot f_1 + \lambda_2\cdot(f_2 + f_3) + \lambda_3\cdot(f_4 + f_5) + \lambda_4\cdot (\sum_{規定}f_6)
+  f = \lambda_1\cdot f_1 + \lambda_2\cdot(f_2 + f_3) + \lambda_3\cdot(f_4 + f_5) + \lambda_4\cdot (\sum_{既定}f_6)
 \end{eqnarray*}
 
 \begin{lstlisting}[language=Python]
@@ -641,12 +641,12 @@ class NumberPlace:
   def check2(self, a, debug=False):
     N, M, S, _ = self.get_param()
     b = np.array(a).reshape(N, N)
-    # 規定値は正しい？
+    # 既定値は正しい？
     for a in self.required:
         IJX = a.split(',')
         if b[int(IJX[0])][int(IJX[1])]!=int(IJX[2]):
             if debug:
-                print(f'!: 規定値が違う:({IJX[0]},{IJX[1]}){IJX[2]}!={b[int(IJX[0])][int(IJX[1])]}')
+                print(f'!: 既定値が違う:({IJX[0]},{IJX[1]}){IJX[2]}!={b[int(IJX[0])][int(IJX[1])]}')
             return False
     # 各行の数値の和はS？
     for i in range(N):
@@ -720,11 +720,11 @@ if __name__ == '__main__':
   #lagrange1 = 40.0      # 数値に重複なし
   #lagrange2 =  5.4      # 行、列、ブロック、で重複なし
   #lagrange3 =  0.0      # 和はS
-  #lagrange4 =  5.1      # 規定セル
-  lagrange1 = 1.0      # 数値に重複なし
-  lagrange2 = lagrange1 * 0.653         # 行、列、ブロック、で重複なし 0.018
+  #lagrange4 =  5.1      # 既定セル
+  lagrange1 = 1.0                     # 数値に重複なし
+  lagrange2 = lagrange1 * 0.653       # 行、列、ブロック、で重複なし 0.018
   lagrange3 = lagrange1 * 0.0         # 和はS
-  lagrange4 = lagrange1 * 0.05         # 規定セル
+  lagrange4 = lagrange1 * 0.05        # 既定セル
   Q = sudoku.f(lagrange1, lagrange2, lagrange3, lagrange4)
   num_reads = 100
   sampleset = sudoku.solv(Q, num_reads)
@@ -748,7 +748,7 @@ if __name__ == '__main__':
 
 \subsubsection{→ 4x4 の場合}
 
-規定セルの値：data4.txt
+既定セルの値：data4.txt
 \begin{verbatim}
   0, 1, 1
   1, 0, 2
@@ -822,7 +822,7 @@ if __name__ == '__main__':
   !: 行で数値が重複
   !: 行で数値が重複
   check1 Passed!
-  !: 規定値が違う:(0, 0) 8!=6
+  !: 既定値が違う:(0, 0) 8!=6
   !: 列で数値が重複
   !: セルの中の数値が1つでない  0:[0 1 0 1 0 0 0 0 0]
   !: 行で数値が重複
