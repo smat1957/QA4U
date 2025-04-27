@@ -45,48 +45,46 @@ class NumberPlace:
                 self.sub1(i, j, L, Q)
         return Q
 
-    def sub2R(self, i, L, Q):
+    def sub2R(self, i, n, L, Q):
         N, _, _, idx = self.get_param()
-        for n1 in range(N):
-            for j1 in range(N):
-                Q[(idx[(i, j1, n1)], idx[(i, j1, n1)])] -= 2.0 * L
-                for n2 in range(N):
-                    for j2 in range(N):
-                        Q[(idx[(i, j1, n1)], idx[(i, j2, n2)])] += 1.0 * L
+        for j1 in range(N):
+            Q[(idx[(i, j1, n)], idx[(i, j1, n)])] -= 2.0 * L
+            for j2 in range(N):
+                Q[(idx[(i, j1, n)], idx[(i, j2, n)])] += 1.0 * L
 
-    def sub2C(self, j, L, Q):
+    def sub2C(self, j, n, L, Q):
         N, _, _, idx = self.get_param()
-        for n1 in range(N):
-            for i1 in range(N):
-                Q[(idx[(i1, j, n1)], idx[(i1, j, n1)])] -= 2.0 * L
-                for n2 in range(N):
-                    for i2 in range(N):
-                        Q[(idx[(i1, j, n1)], idx[(i2, j, n2)])] += 1.0 * L
+        for i1 in range(N):
+            Q[(idx[(i1, j, n)], idx[(i1, j, n)])] -= 2.0 * L
+            for i2 in range(N):
+                Q[(idx[(i1, j, n)], idx[(i2, j, n)])] += 1.0 * L
 
     def f2(self, L, Q):
         N, _, _, _ = self.get_param()
         for i in range(N):
-            self.sub2R(i, L, Q)
+            for n in range(N):
+                self.sub2R(i, n, L, Q)
         for j in range(N):
-            self.sub2C(j, L, Q)
+            for n in range(N):
+                self.sub2C(j, n, L, Q)
         return Q
 
-    def sub3(self, i0, j0, L, Q):
+    def sub3(self, i0, j0, n, L, Q):
         N, M, _, idx = self.get_param()
-        for n1 in range(N):
-            for x1 in range(M):
-                for y1 in range(M):
-                    Q[(idx[(i0+x1, j0+y1 ,n1)], idx[(i0+x1, j0+y1, n1)])] -= 2.0 * L
-                    for n2 in range(N):
-                        for x2 in range(M):
-                            for y2 in range(M):
-                                Q[(idx[(i0+x1, j0+y1, n1)], idx[(i0+x2, j0+y2, n2)])] += 1.0 * L
+        for x1 in range(M):
+            for y1 in range(M):
+                Q[(idx[(i0 + x1, j0 + y1, n)], idx[(i0 + x1, j0 + y1, n)])] -= 2.0 * L
+                for x2 in range(M):
+                    for y2 in range(M):
+                        Q[(idx[(i0 + x1, j0 + y1, n)], idx[(i0 + x2, j0 + y2, n)])] += 1.0 * L
 
     def f3(self, L, Q):
+        N, _, _, idx = self.get_param()
         i0j0 = self.block_ij()
         for i0 in i0j0:
             for j0 in i0j0:
-                self.sub3(i0, j0, L, Q)
+                for n in range(N):
+                    self.sub3(i0, j0, n, L, Q)
         return Q
 
     def sub4R(self, i, L, Q):
@@ -283,7 +281,7 @@ class NumberPlace:
     def decode(self, a):
         N, M, _, _ = self.get_param()
         b = np.array(a).reshape(N**2, N)
-        print(b)
+        #print(b)
         mat = []
         for v in b:
             num = 0
@@ -307,16 +305,20 @@ class NumberPlace:
             print()
 
 if __name__ == '__main__':
-    KiteiF = 'data4.txt'    # KiteiF = 'data9.txt'
-    M = 2                   # M = 3
+    KiteiF = 'data9alt.txt'
+    M = 3
     sudoku = NumberPlace(M, KiteiF)
     sudoku.print_shape()
-    lagrange1 = 40.0      # 数値に重複なし
-    lagrange2 =  2.4      # 行、列、ブロック、で重複なし
-    lagrange3 =  1.9      # 和はS
-    lagrange4 =  5.1      # 規定セル
+    #lagrange1 = 40.0      # 数値に重複なし
+    #lagrange2 =  5.4      # 行、列、ブロック、で重複なし
+    #lagrange3 =  0.0      # 和はS
+    #lagrange4 =  5.1      # 規定セル
+    lagrange1 = 100.0      # 数値に重複なし
+    lagrange2 = lagrange1 * 0.821        # 行、列、ブロック、で重複なし 0.018
+    lagrange3 = lagrange1 * 0.0         # 和はS
+    lagrange4 = lagrange1 * 2.0         # 規定セル
     Q = sudoku.f(lagrange1, lagrange2, lagrange3, lagrange4)
-    num_reads = 10000
+    num_reads = 100
     sampleset = sudoku.solv(Q, num_reads)
     ans = sudoku.result(sampleset)
     print(*ans, sep='\n')

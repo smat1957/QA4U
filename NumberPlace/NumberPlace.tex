@@ -240,11 +240,11 @@
 \end{equation*}
 \item 同一の行（列）にあるセルの数値と同じ数値は、同じ行（列）の他のセルには入らない（第1項が行、第2項が列）
 \begin{equation*}
-  f_2 = \sum_i^N\bigg(\sum_n^N\sum_j^N q_{i,j,n} - 1\bigg)^2 + \sum_j^N\bigg(\sum_n^N\sum_i^N q_{i,j,n} - 1\bigg)^2
+  f_2 = \sum_i^N\sum_n^N\bigg(\sum_j^N q_{i,j,n} - 1\bigg)^2 + \sum_j^N\sum_n^N\bigg(\sum_i^N q_{i,j,n} - 1\bigg)^2
 \end{equation*}
 \item いずれのブロック（$M\times M$）においても、その中のセルの数値は重複しない
 \begin{eqnarray*}
-  f_3 = \sum_{ブロック先頭セルのi_0,j_0}\bigg(\sum_n^N\sum_x^M\sum_y^M q_{i_0+x-1,j_0+y-1,n} - 1\bigg)^2
+  f_3 = \sum_{ブロック先頭セルのi_0,j_0}\sum_n^N\bigg(\sum_x^M\sum_y^M q_{i_0+x-1,j_0+y-1,n} - 1\bigg)^2
 \end{eqnarray*}
 \item いずれの行（列）方向の数値の和も同じ値S($=1+2+\cdots +N$)になる（第1項が行、第2項が列）
 \begin{equation*}
@@ -265,14 +265,14 @@
 \begin{eqnarray*}
   f_1 &=& \sum_i^N\sum_j^N\bigg(\sum_n^N q_{i,j,n} - 1\bigg)^2\\
 &=& \sum_i^N\sum_j^N\bigg(\sum_{n_1}^N\sum_{n_2}^N q_{i,j,n_1}q_{i,j,n_2} -2\sum_n^N q_{i,j,n} \bigg)\\
-f_2 &=& \sum_i^N\bigg(\sum_n^N\sum_j^N q_{i,j,n} - 1\bigg)^2 + \sum_j^N\bigg(\sum_n^N\sum_i^N q_{i,j,n} - 1\bigg)^2\\
-&=& \sum_i^N\bigg(\sum_{n_1}^N\sum_{j_1}^Nq_{i,j_1,n_1}\sum_{n_2}^N\sum_{j_2}^Nq_{i,j_2,n_2} - 2\sum_n^N\sum_j^N q_{i,j,n}\bigg)\\
- &+& \sum_j^N\bigg(\sum_{n_1}^N\sum_{i_1}^Nq_{i_1,j,n_1}\sum_{n_2}^N\sum_{i_2}^Nq_{i_2,j,n_2} - 2\sum_n^N\sum_i^N q_{i,j,n}\bigg)\\
- f_3 &=& \sum_{ブロック先頭セルのi_0,j_0}\bigg(\sum_n^N\sum_x^M\sum_y^M q_{i_0+x-1,j_0+y-1,n} - 1\bigg)^2\\
- &=& \sum_{ブロック先頭セルのi_0,j_0}\bigg(\sum_{n_1}^N\sum_{x_1}^M\sum_{y_1}^M q_{i_0+x_1-1,j_0
- +y_1-1,n_1} \sum_{n_2}^N\sum_{x_2}^M\sum_{y_2}^M q_{i_0+x_2-1,j_0
- +y_2-1,n_2}\\
-  &-& 2\sum_n^N\sum_x^M\sum_y^M q_{i_0+x-1,j_0+y-1,n}\bigg)\\
+f_2 &=& \sum_i^N\sum_n^N\bigg(\sum_j^N q_{i,j,n} - 1\bigg)^2 + \sum_j^N\sum_n^N\bigg(\sum_i^N q_{i,j,n} - 1\bigg)^2\\
+&=& \sum_i^N\sum_n^N\bigg(\sum_{j_1}^Nq_{i,j_1,n}\sum_{j_2}^Nq_{i,j_2,n} - 2\sum_j^N q_{i,j,n}\bigg)
+ + \sum_j^N\sum_n^N\bigg(\sum_{i_1}^Nq_{i_1,j,n}\sum_{i_2}^Nq_{i_2,j,n} - 2\sum_i^N q_{i,j,n}\bigg)\\
+ f_3 &=& \sum_{ブロック先頭セルのi_0,j_0}\sum_n^N\bigg(\sum_x^M\sum_y^M q_{i_0+x-1,j_0+y-1,n} - 1\bigg)^2\\
+ &=& \sum_{ブロック先頭セルのi_0,j_0}\sum_n^N\bigg(\sum_{x_1}^M\sum_{y_1}^M q_{i_0+x_1-1,j_0
+ +y_1-1,n}\sum_{x_2}^M\sum_{y_2}^M q_{i_0+x_2-1,j_0
+ +y_2-1,n}\\
+  &-& 2\sum_x^M\sum_y^M q_{i_0+x-1,j_0+y-1,n}\bigg)\\
  f_4 &=& \sum_i^N\bigg(\sum_j^N\sum_n^N n \cdot q_{i,j,n} - S\bigg)^2 + \sum_j^N\bigg(\sum_i^N\sum_n^N n \cdot q_{i,j,n} - S\bigg)^2\\
  &=& \sum_i^N\bigg(\sum_{j_1}^N\sum_{n_1}^N n_1 q_{i,j_1,n_1}\sum_{j_2}^N\sum_{n_2}^N n_2 q_{i,j_2,n_2} -2S\sum_j^N\sum_n^N n q_{i,j,n}\bigg)\\
  &+& \sum_j^N\bigg(\sum_{i_1}^N\sum_{n_1}^N n_1 q_{i_1,j,n_1}\sum_{i_2}^N\sum_{n_2}^N n_2 q_{i_2,j,n_2} -2S\sum_i^N\sum_n^N n q_{i,j,n}\bigg)\\
@@ -380,36 +380,34 @@ class NumberPlace:
 同一の行（列）にあるセルの数値と同じ数値は、同じ行（列）の他のセルには入らない（第1項が行、第2項が列）
 
 \begin{eqnarray*}
-  f_2 &=& \sum_i^N\bigg(\sum_n^N\sum_j^N q_{i,j,n} - 1\bigg)^2 + \sum_j^N\bigg(\sum_n^N\sum_i^N q_{i,j,n} - 1\bigg)^2\\
-  &=& \sum_i^N\bigg(\sum_{n_1}^N\sum_{j_1}^Nq_{i,j_1,n_1}\sum_{n_2}^N\sum_{j_2}^Nq_{i,j_2,n_2} - 2\sum_n^N\sum_j^N q_{i,j,n}\bigg)\\
-   &+& \sum_j^N\bigg(\sum_{n_1}^N\sum_{i_1}^Nq_{i_1,j,n_1}\sum_{n_2}^N\sum_{i_2}^Nq_{i_2,j,n_2} - 2\sum_n^N\sum_i^N q_{i,j,n}\bigg)
+  f_2 &=& \sum_i^N\sum_n^N\bigg(\sum_j^N q_{i,j,n} - 1\bigg)^2 + \sum_j^N\sum_n^N\bigg(\sum_i^N q_{i,j,n} - 1\bigg)^2\\
+  &=& \sum_i^N\sum_n^N\bigg(\sum_{j_1}^Nq_{i,j_1,n}\sum_{j_2}^Nq_{i,j_2,n} - 2\sum_j^N q_{i,j,n}\bigg)
+  + \sum_j^N\sum_n^N\bigg(\sum_{i_1}^Nq_{i_1,j,n}\sum_{i_2}^Nq_{i_2,j,n} - 2\sum_i^N q_{i,j,n}\bigg)
 \end{eqnarray*}
 
 \begin{lstlisting}[language=Python]
-  def sub2R(self, i, L, Q):
+  def sub2R(self, i, n, L, Q):
     N, _, _, idx = self.get_param()
-    for n1 in range(N):
-        for j1 in range(N):
-            Q[(idx[(i, j1, n1)], idx[(i, j1, n1)])] -= 2.0 * L
-            for n2 in range(N):
-                for j2 in range(N):
-                    Q[(idx[(i, j1, n1)], idx[(i, j2, n2)])] += 1.0 * L
+    for j1 in range(N):
+        Q[(idx[(i, j1, n)], idx[(i, j1, n)])] -= 2.0 * L
+        for j2 in range(N):
+            Q[(idx[(i, j1, n)], idx[(i, j2, n)])] += 1.0 * L
 
-  def sub2C(self, j, L, Q):
+  def sub2C(self, j, n, L, Q):
     N, _, _, idx = self.get_param()
-    for n1 in range(N):
-        for i1 in range(N):
-            Q[(idx[(i1, j, n1)], idx[(i1, j, n1)])] -= 2.0 * L
-            for n2 in range(N):
-                for i2 in range(N):
-                    Q[(idx[(i1, j, n1)], idx[(i2, j, n2)])] += 1.0 * L
+    for i1 in range(N):
+        Q[(idx[(i1, j, n)], idx[(i1, j, n)])] -= 2.0 * L
+        for i2 in range(N):
+            Q[(idx[(i1, j, n)], idx[(i2, j, n)])] += 1.0 * L
 
   def f2(self, L, Q):
     N, _, _, _ = self.get_param()
     for i in range(N):
-        self.sub2R(i, L, Q)
+        for n in range(N):
+            self.sub2R(i, n, L, Q)
     for j in range(N):
-        self.sub2C(j, L, Q)
+        for n in range(N):
+            self.sub2C(j, n, L, Q)
     return Q
 \end{lstlisting}
 
@@ -418,30 +416,30 @@ class NumberPlace:
 いずれのブロック（$M\times M$）においても、その中のセルの数値は重複しない
 
 \begin{eqnarray*}
-  f_3 &=& \sum_{ブロック先頭セルのi_0,j_0}\bigg(\sum_n^N\sum_x^M\sum_y^M q_{i_0+x-1,j_0+y-1,n} - 1\bigg)^2\\
-  &=& \sum_{ブロック先頭セルのi_0,j_0}\bigg(\sum_{n_1}^N\sum_{x_1}^M\sum_{y_1}^M q_{i_0+x_1-1,j_0
-  +y_1-1,n_1} \sum_{n_2}^N\sum_{x_2}^M\sum_{y_2}^M q_{i_0+x_2-1,j_0
-  +y_2-1,n_2}\\
-   &-& 2\sum_n^N\sum_x^M\sum_y^M q_{i_0+x-1,j_0+y-1,n}\bigg)
+  f_3 &=& \sum_{ブロック先頭セルのi_0,j_0}\sum_n^N\bigg(\sum_x^M\sum_y^M q_{i_0+x-1,j_0+y-1,n} - 1\bigg)^2\\
+  &=& \sum_{ブロック先頭セルのi_0,j_0}\sum_n^N\bigg(\sum_{x_1}^M\sum_{y_1}^M q_{i_0+x_1-1,j_0
+  +y_1-1,n}\sum_{x_2}^M\sum_{y_2}^M q_{i_0+x_2-1,j_0
+  +y_2-1,n}\\
+   &-& 2\sum_x^M\sum_y^M q_{i_0+x-1,j_0+y-1,n}\bigg)
 \end{eqnarray*}
 
 \begin{lstlisting}[language=Python]
-  def sub3(self, i0, j0, L, Q):
+  def sub3(self, i0, j0, n, L, Q):
     N, M, _, idx = self.get_param()
-    for n1 in range(N):
-        for x1 in range(M):
-            for y1 in range(M):
-                Q[(idx[(i0+x1, j0+y1 ,n1)], idx[(i0+x1, j0+y1, n1)])] -= 2.0 * L
-                for n2 in range(N):
-                    for x2 in range(M):
-                        for y2 in range(M):
-                            Q[(idx[(i0+x1, j0+y1, n1)], idx[(i0+x2, j0+y2, n2)])] += 1.0 * L
+    for x1 in range(M):
+        for y1 in range(M):
+            Q[(idx[(i0 + x1, j0 + y1, n)], idx[(i0 + x1, j0 + y1, n)])] -= 2.0 * L
+            for x2 in range(M):
+                for y2 in range(M):
+                    Q[(idx[(i0 + x1, j0 + y1, n)], idx[(i0 + x2, j0 + y2, n)])] += 1.0 * L
 
   def f3(self, L, Q):
+    N, _, _, idx = self.get_param()
     i0j0 = self.block_ij()
     for i0 in i0j0:
         for j0 in i0j0:
-            self.sub3(i0, j0, L, Q)
+            for n in range(N):
+                self.sub3(i0, j0, n, L, Q)
     return Q
 \end{lstlisting}
 
@@ -720,8 +718,8 @@ if __name__ == '__main__':
   sudoku = NumberPlace(M, KiteiF)
   sudoku.print_shape()
   lagrange1 = 40.0      # 数値に重複なし
-  lagrange2 =  2.4      # 行、列、ブロック、で重複なし
-  lagrange3 =  1.9      # 和はS
+  lagrange2 =  5.4      # 行、列、ブロック、で重複なし
+  lagrange3 =  0.0      # 和はS
   lagrange4 =  5.1      # 規定セル
   Q = sudoku.f(lagrange1, lagrange2, lagrange3, lagrange4)
   num_reads = 10000
