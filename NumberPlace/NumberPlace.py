@@ -3,14 +3,14 @@ from collections import defaultdict, Counter
 import numpy as np
 
 class NumberPlace:
-    def __init__(self, M=2):
+    def __init__(self, M=2, FileN='data.txt'):
         self.M = M
         self.N = M * M
         S = 0
         for i in range(1, self.N+1):
             S += i
         self.S = S
-        with open('data.txt', 'r') as f:
+        with open(FileN, 'r') as f:
             self.required = f.read().splitlines()
         self.idx = {}
         k = 0
@@ -314,9 +314,9 @@ class NumberPlace:
         return mat
 
 if __name__ == '__main__':
+    KiteiF = 'data.txt'
     M = 2
-    N = M*M
-    sudoku = NumberPlace(M)
+    sudoku = NumberPlace(M, KiteiF)
     lagrange1 = 40.0      # 数値に重複なし
     lagrange2 =  2.4      # 行、列、ブロック、で重複なし
     lagrange3 =  1.9      # 和はS
@@ -333,5 +333,5 @@ if __name__ == '__main__':
             a = sudoku.decode(sample)
             if sudoku.check2(a, False):
                 #print('check2 Passed!')
-                print(np.array(a).reshape(N, N))
+                print(np.array(a).reshape(M*M, M*M))
                 print()
