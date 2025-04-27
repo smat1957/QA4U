@@ -165,6 +165,7 @@ class MagicCircle:
             if s!= S:
                 return False
         #
+        '''
         s = 0
         for i in range(N):
             for j in range(N):
@@ -178,6 +179,27 @@ class MagicCircle:
             k = N-i-1
             s += b[i][k]
         if s!=S:
+            return False
+        #
+        '''
+        # 右下がりの対角要素の和はS？
+        s = 0
+        for i in range(N):
+            for j in range(N):
+                if i == j:
+                    s += b[i][j]
+        if s != S:
+            #if debug:
+            #    print(f'!: 右下がりの対角要素の総和＝{s}!={S}')
+            return False
+        # 右上がりの対角要素の和はS?
+        s = 0
+        for i in range(N):
+            k = N - i - 1
+            s += b[i][k]
+        if s != S:
+            #if debug:
+            #    print(f'!: 右上がりの対角要素の総和＝{s}!={S}')
             return False
         #
         return True

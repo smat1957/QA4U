@@ -146,8 +146,9 @@ class NumberPlace:
         _ = self.f1(lagrange1, Q)
         _ = self.f2(lagrange2, Q)
         _ = self.f3(lagrange2, Q)
-        _ = self.f4(lagrange3, Q)
-        _ = self.f5(lagrange3, Q)
+        if 0.0 < lagrange3:
+            _ = self.f4(lagrange3, Q)
+            _ = self.f5(lagrange3, Q)
         for a in self.required:
             IJX = a.split(',')
             _ = self.f6(int(IJX[0]), int(IJX[1]), int(IJX[2]), lagrange4, Q)
@@ -276,27 +277,6 @@ class NumberPlace:
                     if debug:
                         print(f'!: ブロック内の総和＝{s}!={S}')
                     return False
-        '''
-        # 右下がりの対角要素の和はS？
-        s = 0
-        for i in range(N):
-            for j in range(N):
-                if i == j:
-                    s += b[i][j]
-        if s != S:
-            if debug:
-                print(f'!: 右下がりの対角要素の総和＝{s}!={S}')
-            return False
-        # 右上がりの対角要素の和はS?
-        s = 0
-        for i in range(N):
-            k = N - i - 1
-            s += b[i][k]
-        if s != S:
-            if debug:
-                print(f'!: 右上がりの対角要素の総和＝{s}!={S}')
-            return False
-        '''
         #
         return True
 
@@ -313,10 +293,24 @@ class NumberPlace:
             mat.append(num)
         return mat
 
+    def print_shape(self):
+        for i in range(self.N):
+            print(f'{i}:', end='\t')
+            for j in range(self.N):
+                for a in self.required:
+                    IJX = a.split(',')
+                    if i==int(IJX[0]) and j==int(IJX[1]):
+                        print(int(IJX[2]), end=' ')
+                        break
+                else:
+                    print('_', end=' ')
+            print()
+
 if __name__ == '__main__':
-    KiteiF = 'data.txt'
-    M = 2
+    KiteiF = 'data4.txt'    # KiteiF = 'data9.txt'
+    M = 2                   # M = 3
     sudoku = NumberPlace(M, KiteiF)
+    sudoku.print_shape()
     lagrange1 = 40.0      # 数値に重複なし
     lagrange2 =  2.4      # 行、列、ブロック、で重複なし
     lagrange3 =  1.9      # 和はS
