@@ -124,7 +124,7 @@ class NumberPlace:
                     for x2 in range(M):
                         for y2 in range(M):
                             for n2 in range(N):
-                                Q[(idx[(i0+x1, j0+y1, n1)], idx[(i0+x2, j0+y2, n2)])] -= (n1+1) * (n2+1) * L
+                                Q[(idx[(i0+x1, j0+y1, n1)], idx[(i0+x2, j0+y2, n2)])] += (n1+1) * (n2+1) * L
 
     def f5(self, L, Q):
         i0j0 = self.block_ij()
@@ -272,7 +272,7 @@ class NumberPlace:
                     for y in range(M):
                         #print(i+x,j+y)
                         s += b[i+x][j+y]
-                if s != 1:
+                if s != S:
                     if debug:
                         print(f'!: ブロック内の総和＝{s}!={S}')
                     return False
@@ -317,19 +317,21 @@ if __name__ == '__main__':
     M = 2
     N = M*M
     sudoku = NumberPlace(M)
-    lagrange1 = 500    # 数値に重複なし
-    lagrange2 = 26.3    # 行、列、ブロック、で重複なし
-    lagrange3 = 0.001    # 和はS
-    lagrange4 = 20.0    # 規定セル
+    lagrange1 = 40.0      # 数値に重複なし
+    lagrange2 =  2.4      # 行、列、ブロック、で重複なし
+    lagrange3 =  1.9      # 和はS
+    lagrange4 =  5.1      # 規定セル
     Q = sudoku.f(lagrange1, lagrange2, lagrange3, lagrange4)
-    num_reads = 1000
+    num_reads = 10000
     sampleset = sudoku.solv(Q, num_reads)
     ans = sudoku.result(sampleset)
     print(*ans, sep='\n')
     #
     for sample in sampleset.record['sample']:
         if sudoku.check1(sample, False):
+            #print('check1 Passed!')
             a = sudoku.decode(sample)
             if sudoku.check2(a, False):
+                #print('check2 Passed!')
                 print(np.array(a).reshape(N, N))
                 print()
