@@ -281,7 +281,6 @@ class NumberPlace:
     def decode(self, a):
         N, M, _, _ = self.get_param()
         b = np.array(a).reshape(N**2, N)
-        #print(b)
         mat = []
         for v in b:
             num = 0
