@@ -304,7 +304,7 @@ class NumberPlace:
             print()
 
 if __name__ == '__main__':
-    KiteiF = 'data9alt.txt'
+    KiteiF = 'dataA250429.txt'
     M = 3
     sudoku = NumberPlace(M, KiteiF)
     sudoku.print_shape()
