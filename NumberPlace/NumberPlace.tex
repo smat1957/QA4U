@@ -528,34 +528,11 @@ $i, j, n$は、どれも$0$から始まるインデックス。
 
 予め数値$X\in\{1,\cdots,N\}$が決められている$I$行$J$列目のセルがある
 
-\begin{comment}
 \begin{eqnarray*}
-  f_6 &=& \sum_{既定のセルI,J}\bigg(\sum_n^N n \cdot q_{I,J,n} - X\bigg)^2\\
- &=& \sum_{既定セルのI,J}\bigg(\sum_{n_1}^N n_1 q_{I,J,n_1}\sum_{n_2}^N n_2 q_{I,J,n_2} - 2X\sum_n^N n q_{I,J,n}\bigg)
-\end{eqnarray*}
-\end{comment}
-
-\begin{eqnarray*}
-  f_6 &=& \sum_{既定のセルI,J,X}\bigg( X \cdot q_{I,J,X} - X\bigg)^2\\
- &=& \sum_{既定セルのI,J,X}X^2\bigg( q_{I,J,X}\cdot q_{I,J,X} - 2\cdot q_{I,J,X}\bigg)\\
- &=& \sum_{既定のI,J,X}\bigg(q_{I,J,X}-2q_{I,J,X}\bigg)\\
- &=& \sum_{既定のI,J,X}\bigg(-q_{I,J,X}\bigg)
-\end{eqnarray*}
-
-\begin{lstlisting}[language=Python]
-  def f6(self, I, J, X, L, Q):
-    N, _, _, idx = self.get_param()
-    for n1 in range(N):
-        Q[(idx[(I, J, n1)], idx[(I, J, n1)])] -= 2 * (n1+1) * X * L
-        for n2 in range(N):
-            Q[(idx[(I, J, n1)], idx[(I, J, n2)])] += (n1+1) * (n2+1) * L
-    return Q
-\end{lstlisting}
-
-あるいは、最初からこの制約を、より直接的には次の様に考えることもできる
-
-\begin{eqnarray*}
-  f_6 = \sum_{既定のI, J, X}\bigg(q_{I, J, X} - 1\bigg)^2
+  f_6 &=& \sum_{既定のI, J, X}\bigg(q_{I, J, X} - 1\bigg)^2\\
+  &=& \sum_{既定セルのI,J,X}\bigg( q_{I,J,X}\cdot q_{I,J,X} - 2\cdot q_{I,J,X}\bigg)\\
+  &=& \sum_{既定のI,J,X}\bigg(q_{I,J,X}-2q_{I,J,X}\bigg)\\
+  &=& \sum_{既定のI,J,X}\bigg(-q_{I,J,X}\bigg)
 \end{eqnarray*}
 
 \begin{lstlisting}[language=Python]
