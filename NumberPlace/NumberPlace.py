@@ -21,6 +21,7 @@ class NumberPlace:
                     k += 1
         samplers = [SASampler(), SQASampler()]
         self.sampler = samplers[0]
+        self.debug = False
 
     def get_param(self):
         return self.N, self.M, self.S, self.idx
@@ -73,6 +74,7 @@ class NumberPlace:
         N, M, _, idx = self.get_param()
         for x1 in range(M):
             for y1 in range(M):
+                if self.debug: print(f'debug: i0+x1={i0+x1}, j0+y1={j0+y1}, n={n}')
                 Q[(idx[(i0 + x1, j0 + y1, n)], idx[(i0 + x1, j0 + y1, n)])] -= 2.0 * L
                 for x2 in range(M):
                     for y2 in range(M):
@@ -84,6 +86,7 @@ class NumberPlace:
         for i0 in i0j0:
             for j0 in i0j0:
                 for n in range(N):
+                    if self.debug: print(f'debug:(i0,j0)=({i0},{j0})')
                     self.sub3(i0, j0, n, L, Q)
         return Q
 
@@ -167,7 +170,7 @@ class NumberPlace:
                         ans[i][j] = n+1
         return ans
 
-    def evaluate(self, sampleset, prn=True):
+    def evaluate(self, sampleset):
         # Extract sample solutions, energies, and sort them by frequency
         samples = sampleset.record['sample']
         energies = sampleset.record['energy']
@@ -176,14 +179,14 @@ class NumberPlace:
         # Sort the results by appearance frequency and then energy
         sample_frequency = Counter(sample for sample, _ in sample_data)
         # Print sorted results by frequency and include energy
-        if prn:
+        if self.debug:
             print("\nSorted samples by frequency and energy:")
             for solution, freq in sample_frequency.most_common():
                 energy = next(energy for sample, energy in sample_data if sample == solution)
                 print(f"Sample: {solution}, Frequency: {freq}, Energy: {energy:+.2f}")
         return sample_data, sample_frequency
 
-    def check1(self, a, debug=False):
+    def check1(self, a):
         N, M, _, _ = self.get_param()
         b = np.array(a).reshape(N*N, N)
         # 各セルに数値は1つ？
@@ -192,57 +195,58 @@ class NumberPlace:
             for n in range(N):
                 s += b[i][n]
             if s != 1:
-                if debug:
-                    print(f'!: セルの中の数値が1つでない{i:3d}:{b[i]}')
+                if self.debug: print(f'!: セルの中の数値が1つでない{i:3d}:{b[i]}')
                 return False
         # 各ブロックに重複する数値はない？
         i0j0 = self.block_ij()
-        for i in i0j0:
-            for j in i0j0:
+        for i0 in i0j0:
+            for j0 in i0j0:
+                ary = []
+                s = 0
                 for n in range(N):
-                    s = 0
                     for x in range(M):
                         for y in range(M):
-                            bidx = (i+x)*N + j+y
+                            bidx = (i0+x)*N + j0+y
                             s += b[bidx][n]
+                            ary.append(b[bidx][n])
                     if s != 1:
-                        if debug:
-                            print(f'!: ブロック内で数値が重複')
+                        if self.debug: print(f'!: ブロック内で数値が重複:{np.array(ary)}')
                         return False
         #
         for n in range(N):
             # 各行に重複する数値はない？
             for i in range(N):
+                ary = []
                 s = 0
                 for j in range(N):
                     bidx = i * N + j
                     s += b[bidx][n]
+                    ary.append(b[bidx][n])
                 if s != 1:
-                    if debug:
-                        print(f'!: 行で数値が重複')
+                    if self.debug: print(f'!: 行で数値が重複:{np.array(ary)}')
                     return False
             # 各列に重複する数値はない？
             for j in range(N):
+                ary = []
                 s = 0
                 for i in range(N):
                     bidx = i * N + j
                     s += b[bidx][n]
+                    ary.append(b[bidx][n])
                 if s != 1:
-                    if debug:
-                        print(f'!: 列で数値が重複')
+                    if self.debug: print(f'!: 列で数値が重複:{np.array(ary)}')
                     return False
         #
         return True
 
-    def check2(self, a, debug=False):
+    def check2(self, a):
         N, M, S, _ = self.get_param()
         b = np.array(a).reshape(N, N)
         # 既定値は正しい？
         for a in self.required:
             IJX = a.split(',')
             if b[int(IJX[0])][int(IJX[1])]!=int(IJX[2]):
-                if debug:
-                    print(f'!: 既定値が違う:({IJX[0]},{IJX[1]}){IJX[2]}!={b[int(IJX[0])][int(IJX[1])]}')
+                if self.debug: print(f'!: 既定値が違う:({IJX[0]},{IJX[1]}){IJX[2]}!={b[int(IJX[0])][int(IJX[1])]}')
                 return False
         # 各行の数値の和はS？
         for i in range(N):
@@ -250,8 +254,7 @@ class NumberPlace:
             for j in range(N):
                 s += b[i][j]
             if s != S:
-                if debug:
-                    print(f'!: 行の総和＝{s}!={S}')
+                if self.debug: print(f'!: 行の総和＝{s}!={S}')
                 return False
         # 各列の数値の和はS？
         for j in range(N):
@@ -259,8 +262,7 @@ class NumberPlace:
             for i in range(N):
                 s += b[i][j]
             if s != S:
-                if debug:
-                    print(f'!: 列の総和＝{s}!={S}')
+                if self.debug: print(f'!: 列の総和＝{s}!={S}')
                 return False
         # 各ブロックの数値の和はS？
         i0j0 = self.block_ij()
@@ -272,8 +274,7 @@ class NumberPlace:
                         #print(i+x,j+y)
                         s += b[i+x][j+y]
                 if s != S:
-                    if debug:
-                        print(f'!: ブロック内の総和＝{s}!={S}')
+                    if self.debug: print(f'!: ブロック内の総和＝{s}!={S}')
                     return False
         #
         return True
@@ -313,21 +314,21 @@ if __name__ == '__main__':
     #lagrange3 =  0.0      # 和はS
     #lagrange4 =  5.1      # 既定セル
     lagrange1 = 1.0        # 数値に重複なし
-    lagrange2 = lagrange1 * 0.653       # 行、列、ブロック、で重複なし 0.018
-    lagrange3 = lagrange1 * 0.0         # 和はS
-    lagrange4 = lagrange1 * 0.05        # 既定セル
+    lagrange2 = lagrange1 * 0.02      # 行、列、ブロック、で重複なし
+    lagrange3 = 0.0         # 和はS
+    lagrange4 = lagrange1 * 0.1       # 既定セル
     Q = sudoku.f(lagrange1, lagrange2, lagrange3, lagrange4)
     num_reads = 100
     sampleset = sudoku.solv(Q, num_reads)
     ans = sudoku.result(sampleset)
     print(*ans, sep='\n')
     #
-    debug = True
+    sudoku.debug = True
     for sample in sampleset.record['sample']:
-        if sudoku.check1(sample, debug):
-            if debug: print('check1 Passed!')
+        if sudoku.check1(sample):
+            if sudoku.debug: print('check1 Passed!')
             a = sudoku.decode(sample)
-            if sudoku.check2(a, debug):
-                if debug: print('check2 Passed!')
+            if sudoku.check2(a):
+                if sudoku.debug: print('check2 Passed!')
                 print(np.array(a).reshape(M*M, M*M))
                 print()
