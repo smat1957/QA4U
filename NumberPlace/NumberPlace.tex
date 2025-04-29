@@ -279,8 +279,10 @@ f_2 &=& \sum_i^N\sum_n^N\bigg(\sum_j^N q_{i,j,n} - 1\bigg)^2 + \sum_j^N\sum_n^N\
  f_5 &=& \sum_{ブロック先頭セルのi_0,j_0}\bigg(\sum_x^M\sum_y^M\sum_n^N n \cdot q_{i_0+x-1,j_0+y-1,n} - S\bigg)^2\\
  &=& \sum_{ブロック先頭セルのi_0,j_0}\bigg(\sum_{x_1}^M\sum_{y_1}^M\sum_{n_1}^N n_1 q_{i_0+x_1-1,j_0+y_1-1,n_1}\sum_{x_2}^M\sum_{y_2}^M\sum_{n_2}^N n_2 q_{i_0+x_2-1,j_0+y_2-1,n_2}\\
   &-& 2S\sum_x^M\sum_y^M\sum_n^N n q_{i_0+x-1,j_0+y-1}\bigg)\\
- f_6 &=& \sum_{既定のセルI,J}\bigg(\sum_n^N n \cdot q_{I,J,n} - X\bigg)^2\\
- &=& \sum_{既定セルのI,J}\bigg(\sum_{n_1}^N n_1 q_{I,J,n_1}\sum_{n_2}^N n_2 q_{I,J,n_2} - 2X\sum_n^N n q_{I,J,n}\bigg)
+ f_6 &=& \sum_{既定のセルI,J,X}\bigg(X \cdot q_{I,J,n} - X\bigg)^2\\
+ &=& \sum_{既定セルのI,J,X}\bigg( X q_{I,J,X} X q_{I,J,X} - 2 X Xq_{I,J,n}\bigg)\\
+ &=& \sum_{既定セルのI,J,X}\bigg(q_{I,J,X}\cdot q_{I,J,X} - 2 q_{I,J,X}\bigg)\\
+ &=& \sum_{既定セルのI,J,X}\bigg(-q_{I,J,X}\bigg)
 \end{eqnarray*}
 
 \section{式の展開と実装}
@@ -424,6 +426,9 @@ class NumberPlace:
    &-& 2\sum_x^M\sum_y^M q_{i_0+x-1,j_0+y-1,n}\bigg)
 \end{eqnarray*}
 
+$i_0, j_0, n, x_1, x_2, y_1, y_2$は、どれも$0$から始まるインデックス。
+QUBOのインデックスも$0$始まりなので、数式上$i_0+x-1, j_0+y-1, n$などと表現している部分は、プログラム上で$i_0+x, j_0+y,n$となる。
+
 \begin{lstlisting}[language=Python]
   def sub3(self, i0, j0, n, L, Q):
     N, M, _, idx = self.get_param()
@@ -455,6 +460,11 @@ class NumberPlace:
   &=& \sum_i^N\bigg(\sum_{j_1}^N\sum_{n_1}^N n_1 q_{i,j_1,n_1}\sum_{j_2}^N\sum_{n_2}^N n_2 q_{i,j_2,n_2} -2S\sum_j^N\sum_n^N n q_{i,j,n}\bigg)\\
   &+& \sum_j^N\bigg(\sum_{i_1}^N\sum_{n_1}^N n_1 q_{i_1,j,n_1}\sum_{i_2}^N\sum_{n_2}^N n_2 q_{i_2,j,n_2} -2S\sum_i^N\sum_n^N n q_{i,j,n}\bigg)
 \end{eqnarray*}
+
+$i, j, n$は、どれも$0$から始まるインデックス。
+また、QUBOのインデックスも$0$始まり。
+したがって、数式上の$i, j, n$などのインデックスは、そのままプログラム上でも$i, j, n$となる。
+一方インデックスではなくて、盤面に配置するオブジェクト$1\sim N$を表している$n$は、数式上での$\sum_n$の$1$始まりが、当該部分に対応するプログラム上で$n$は$0$始まりの繰り返し文になるので$(n+1)$を掛けるようにしている。
 
 \begin{lstlisting}[language=Python]
   def sub4R(self, i, L, Q):
@@ -518,9 +528,18 @@ class NumberPlace:
 
 予め数値$X\in\{1,\cdots,N\}$が決められている$I$行$J$列目のセルがある
 
+\begin{comment}
 \begin{eqnarray*}
   f_6 &=& \sum_{既定のセルI,J}\bigg(\sum_n^N n \cdot q_{I,J,n} - X\bigg)^2\\
  &=& \sum_{既定セルのI,J}\bigg(\sum_{n_1}^N n_1 q_{I,J,n_1}\sum_{n_2}^N n_2 q_{I,J,n_2} - 2X\sum_n^N n q_{I,J,n}\bigg)
+\end{eqnarray*}
+\end{comment}
+
+\begin{eqnarray*}
+  f_6 &=& \sum_{既定のセルI,J,X}\bigg( X \cdot q_{I,J,X} - X\bigg)^2\\
+ &=& \sum_{既定セルのI,J,X}X^2\bigg( q_{I,J,X}\cdot q_{I,J,X} - 2\cdot q_{I,J,X}\bigg)\\
+ &=& \sum_{既定のI,J,X}\bigg(q_{I,J,X}-2q_{I,J,X}\bigg)\\
+ &=& \sum_{既定のI,J,X}\bigg(-q_{I,J,X}\bigg)
 \end{eqnarray*}
 
 \begin{lstlisting}[language=Python]
@@ -533,11 +552,26 @@ class NumberPlace:
     return Q
 \end{lstlisting}
 
+あるいは、最初からこの制約を、より直接的には次の様に考えることもできる
+
+\begin{eqnarray*}
+  f_6 = \sum_{既定のI, J, X}\bigg(q_{I, J, X} - 1\bigg)^2
+\end{eqnarray*}
+
+\begin{lstlisting}[language=Python]
+  def f6(self, I, J, X, L, Q):
+    _, _, _, idx = self.get_param()
+    Q[(idx[(I, J, X-1)], idx[(I, J, X-1)])] -= L
+    return Q
+\end{lstlisting}
+
 \subsection{評価関数：$f$}
 
 \begin{eqnarray*}
   f = \lambda_1\cdot f_1 + \lambda_2\cdot(f_2 + f_3) + \lambda_3\cdot(f_4 + f_5) + \lambda_4\cdot (\sum_{既定}f_6)
 \end{eqnarray*}
+
+制約の$f_1, f_2, f_3$が満たされると、制約$f_4, f_5$は自動的に満たされるので、制約$f_4, f_5$は$0<\lambda_3$の時だけ選択される様にした。
 
 \begin{lstlisting}[language=Python]
   def f(self, lagrange1=1.0, lagrange2=1.0, lagrange3=1.0, lagrange4=1.0):
@@ -721,10 +755,10 @@ if __name__ == '__main__':
   #lagrange2 =  5.4      # 行、列、ブロック、で重複なし
   #lagrange3 =  0.0      # 和はS
   #lagrange4 =  5.1      # 既定セル
-  lagrange1 = 1.0        # 数値に重複なし
-  lagrange2 = lagrange1 * 0.02      # 行、列、ブロック、で重複なし
-  lagrange3 = 0.0         # 和はS
-  lagrange4 = lagrange1 * 0.1       # 既定セル
+  lagrange1 = 1.5        # 数値に重複なし
+  lagrange2 = 2.0        # 行、列、ブロック、で重複なし
+  lagrange3 = 0.0        # 和はS
+  lagrange4 = 2.0        # 既定セル
   Q = sudoku.f(lagrange1, lagrange2, lagrange3, lagrange4)
   num_reads = 100
   sampleset = sudoku.solv(Q, num_reads)

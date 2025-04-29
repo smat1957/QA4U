@@ -135,11 +135,8 @@ class NumberPlace:
         return Q
 
     def f6(self, I, J, X, L, Q):
-        N, _, _, idx = self.get_param()
-        for n1 in range(N):
-            Q[(idx[(I, J, n1)], idx[(I, J, n1)])] -= 2 * (n1+1) * X * L
-            for n2 in range(N):
-                Q[(idx[(I, J, n1)], idx[(I, J, n2)])] += (n1+1) * (n2+1) * L
+        _, _, _, idx = self.get_param()
+        Q[(idx[(I, J, X-1)], idx[(I, J, X-1)])] -= L
         return Q
 
     def f(self, lagrange1=1.0, lagrange2=1.0, lagrange3=1.0, lagrange4=1.0):
@@ -314,9 +311,9 @@ if __name__ == '__main__':
     #lagrange3 =  0.0      # 和はS
     #lagrange4 =  5.1      # 既定セル
     lagrange1 = 1.0        # 数値に重複なし
-    lagrange2 = lagrange1 * 0.02      # 行、列、ブロック、で重複なし
-    lagrange3 = 0.0         # 和はS
-    lagrange4 = lagrange1 * 0.1       # 既定セル
+    lagrange2 = 1.0        # 行、列、ブロック、で重複なし
+    lagrange3 = 0.0        # 和はS
+    lagrange4 = 1.0        # 既定セル
     Q = sudoku.f(lagrange1, lagrange2, lagrange3, lagrange4)
     num_reads = 100
     sampleset = sudoku.solv(Q, num_reads)
