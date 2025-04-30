@@ -337,6 +337,17 @@ class NumberPlace:
       for i in range(self.M):
           i0j0.append(self.M*i)
       return i0j0
+
+  def belongs(self, I, J):
+      i0j0 = self.block_ij()
+      I0 = 0
+      J0 = 0
+      for n in i0j0:
+          if n<=I<(n+3):
+              I0 = n
+          if n<=J<(n+3):
+              J0 = n
+      return I0, J0
 \end{lstlisting}
 
 \begin{verbatim}
@@ -364,18 +375,18 @@ class NumberPlace:
 
 \begin{lstlisting}[language=Python]
   def sub1(self, i, j, L, Q):
-    N, _, _, idx = self.get_param()
-    for n1 in range(N):
-        Q[(idx[(i, j, n1)], idx[(i, j, n1)])] -= 2.0 * L
-        for n2 in range(N):
-            Q[(idx[(i, j, n1)], idx[(i, j, n2)])] += 1.0 * L
+      N, _, _, idx = self.get_param()
+      for n1 in range(N):
+          Q[(idx[(i, j, n1)], idx[(i, j, n1)])] -= 2.0 * L
+          for n2 in range(N):
+              Q[(idx[(i, j, n1)], idx[(i, j, n2)])] += 1.0 * L
 
   def f1(self, L, Q):
-    N, _, _, _ = self.get_param()
-    for i in range(N):
-        for j in range(N):
-            self.sub1(i, j, L, Q)
-    return Q
+      N, _, _, _ = self.get_param()
+      for i in range(N):
+          for j in range(N):
+              self.sub1(i, j, L, Q)
+      return Q
 \end{lstlisting}
 
 \subsection{制約：$f_2$}
@@ -390,28 +401,28 @@ class NumberPlace:
 
 \begin{lstlisting}[language=Python]
   def sub2R(self, i, n, L, Q):
-    N, _, _, idx = self.get_param()
-    for j1 in range(N):
-        Q[(idx[(i, j1, n)], idx[(i, j1, n)])] -= 2.0 * L
-        for j2 in range(N):
-            Q[(idx[(i, j1, n)], idx[(i, j2, n)])] += 1.0 * L
+      N, _, _, idx = self.get_param()
+      for j1 in range(N):
+          Q[(idx[(i, j1, n)], idx[(i, j1, n)])] -= 2.0 * L
+          for j2 in range(N):
+              Q[(idx[(i, j1, n)], idx[(i, j2, n)])] += 1.0 * L
 
   def sub2C(self, j, n, L, Q):
     N, _, _, idx = self.get_param()
-    for i1 in range(N):
-        Q[(idx[(i1, j, n)], idx[(i1, j, n)])] -= 2.0 * L
-        for i2 in range(N):
-            Q[(idx[(i1, j, n)], idx[(i2, j, n)])] += 1.0 * L
+      for i1 in range(N):
+          Q[(idx[(i1, j, n)], idx[(i1, j, n)])] -= 2.0 * L
+          for i2 in range(N):
+              Q[(idx[(i1, j, n)], idx[(i2, j, n)])] += 1.0 * L
 
   def f2(self, L, Q):
-    N, _, _, _ = self.get_param()
-    for i in range(N):
-        for n in range(N):
-            self.sub2R(i, n, L, Q)
-    for j in range(N):
-        for n in range(N):
-            self.sub2C(j, n, L, Q)
-    return Q
+      N, _, _, _ = self.get_param()
+      for i in range(N):
+          for n in range(N):
+              self.sub2R(i, n, L, Q)
+      for j in range(N):
+          for n in range(N):
+              self.sub2C(j, n, L, Q)
+      return Q
 \end{lstlisting}
 
 \subsection{制約：$f_3$}
@@ -431,24 +442,24 @@ QUBOのインデックスも$0$始まりなので、数式上$i_0+x-1, j_0+y-1, 
 
 \begin{lstlisting}[language=Python]
   def sub3(self, i0, j0, n, L, Q):
-    N, M, _, idx = self.get_param()
-    for x1 in range(M):
-        for y1 in range(M):
-            if self.debug: print(f'debug: i0+x1={i0+x1}, j0+y1={j0+y1}, n={n}')
-            Q[(idx[(i0 + x1, j0 + y1, n)], idx[(i0 + x1, j0 + y1, n)])] -= 2.0 * L
-            for x2 in range(M):
-                for y2 in range(M):
-                    Q[(idx[(i0 + x1, j0 + y1, n)], idx[(i0 + x2, j0 + y2, n)])] += 1.0 * L
+      N, M, _, idx = self.get_param()
+      for x1 in range(M):
+          for y1 in range(M):
+              #if self.debug: print(f'debug: i0+x1={i0+x1}, j0+y1={j0+y1}, n={n}')
+              Q[(idx[(i0+x1,j0+y1,n)],idx[(i0+x1,j0+y1,n)])] -= 2.0 * L
+              for x2 in range(M):
+                  for y2 in range(M):
+                      Q[(idx[(i0+x1,j0 +y1,n)], idx[(i0+x2,j0+y2,n)])] += 1.0 * L
 
   def f3(self, L, Q):
-    N, _, _, idx = self.get_param()
-    i0j0 = self.block_ij()
-    for i0 in i0j0:
-        for j0 in i0j0:
-            for n in range(N):
-                if self.debug: print(f'debug:(i0,j0)=({i0},{j0})')
-                self.sub3(i0, j0, n, L, Q)
-    return Q
+      N, _, _, idx = self.get_param()
+      i0j0 = self.block_ij()
+      for i0 in i0j0:
+          for j0 in i0j0:
+              for n in range(N):
+                  #if self.debug: print(f'debug:(i0,j0)=({i0},{j0})')
+                  self.sub3(i0, j0, n, L, Q)
+      return Q
 \end{lstlisting}
 
 \subsection{制約：$f_4$}
@@ -468,30 +479,30 @@ $i, j, n$は、どれも$0$から始まるインデックス。
 
 \begin{lstlisting}[language=Python]
   def sub4R(self, i, L, Q):
-    N, _, S, idx = self.get_param()
-    for j1 in range(N):
-        for n1 in range(N):
-            Q[(idx[(i, j1, n1)], idx[(i, j1, n1)])] -= 2.0 * (n1+1) * S * L
-            for j2 in range(N):
-                for n2 in range(N):
-                    Q[(idx[(i, j1, n1)], idx[(i, j2, n2)])] += (n1+1) * (n2+1) * L
+      N, _, S, idx = self.get_param()
+      for j1 in range(N):
+          for n1 in range(N):
+              Q[(idx[(i,j1,n1)],idx[(i,j1,n1)])] -= 2.0 * (n1+1) * S * L
+              for j2 in range(N):
+                  for n2 in range(N):
+                      Q[(idx[(i,j1,n1)],idx[(i,j2,n2)])] += (n1+1) * (n2+1) * L
 
   def sub4C(self, j, L, Q):
-    N, _, S, idx = self.get_param()
-    for i1 in range(N):
-        for n1 in range(N):
-            Q[(idx[(i1, j, n1)], idx[(i1, j, n1)])] -= 2.0 * (n1+1) * S * L
-            for i2 in range(N):
-                for n2 in range(N):
-                    Q[(idx[(i1, j, n1)], idx[(i2, j, n2)])] += (n1+1) * (n2+1) * L
+      N, _, S, idx = self.get_param()
+      for i1 in range(N):
+          for n1 in range(N):
+              Q[(idx[(i1,j,n1)],idx[(i1,j,n1)])] -= 2.0 * (n1+1) * S * L
+              for i2 in range(N):
+                  for n2 in range(N):
+                      Q[(idx[(i1,j,n1)],idx[(i2,j,n2)])] += (n1+1) * (n2+1) * L
 
   def f4(self, L, Q):
-    N, _, _, _ = self.get_param()
-    for i in range(N):
-        self.sub4R(i, L, Q)
-    for j in range(N):
-        self.sub4C(j, L, Q)
-    return Q
+      N, _, _, _ = self.get_param()
+      for i in range(N):
+          self.sub4R(i, L, Q)
+      for j in range(N):
+          self.sub4C(j, L, Q)
+      return Q
 \end{lstlisting}
 
 \subsection{制約：$f_5$}
@@ -506,28 +517,27 @@ $i, j, n$は、どれも$0$から始まるインデックス。
 
 \begin{lstlisting}[language=Python]
   def sub5(self, i0, j0, L, Q):
-    N, M, S, idx = self.get_param()
-    for x1 in range(M):
-        for y1 in range(M):
-            for n1 in range(N):
-                Q[(idx[(i0+x1, j0+y1, n1)], idx[(i0+x1, j0+y1, n1)])] -= 2.0 * (n1+1) * S * L
-                for x2 in range(M):
-                    for y2 in range(M):
-                        for n2 in range(N):
-                            Q[(idx[(i0+x1, j0+y1, n1)], idx[(i0+x2, j0+y2, n2)])] += (n1+1) * (n2+1) * L
+      N, M, S, idx = self.get_param()
+      for x1 in range(M):
+          for y1 in range(M):
+              for n1 in range(N):
+                  Q[(idx[(i0+x1,j0+y1,n1)],idx[(i0+x1,j0+y1,n1)])] -= 2.0 * (n1+1) * S * L
+                  for x2 in range(M):
+                      for y2 in range(M):
+                          for n2 in range(N):
+                              Q[(idx[(i0+x1,j0+y1,n1)],idx[(i0+x2,j0+y2,n2)])] += (n1+1) * (n2+1) * L
 
-  def f5(self, L, Q):
-    i0j0 = self.block_ij()
-    for i0 in i0j0:
-        for j0 in i0j0:
-            self.sub5(i0, j0, L, Q)
-    return Q
+    def f5(self, L, Q):
+      i0j0 = self.block_ij()
+      for i0 in i0j0:
+          for j0 in i0j0:
+              self.sub5(i0, j0, L, Q)
+      return Q
 \end{lstlisting}
 
 \subsection{制約：$f_6$}
 
 予め数値$X\in\{1,\cdots,N\}$が決められている$I$行$J$列目のセルがある
-
 \begin{eqnarray*}
   f_6 &=& \sum_{既定のI, J, X}\bigg(q_{I, J, X} - 1\bigg)^2\\
   &=& \sum_{既定セルのI,J,X}\bigg( q_{I,J,X}\cdot q_{I,J,X} - 2\cdot q_{I,J,X}\bigg)\\
@@ -537,10 +547,64 @@ $i, j, n$は、どれも$0$から始まるインデックス。
 
 \begin{lstlisting}[language=Python]
   def f6(self, I, J, X, L, Q):
-    _, _, _, idx = self.get_param()
-    Q[(idx[(I, J, X-1)], idx[(I, J, X-1)])] -= L
-    return Q
+      _, _, _, idx = self.get_param()
+      Q[(idx[(I, J, X-1)], idx[(I, J, X-1)])] -= L
+      return Q
 \end{lstlisting}
+あるいは、より厳しくして探索空間を小さくすることを期待して、
+\begin{eqnarray*}
+  f_{60} &=& \sum_{既定のI,J,X}\bigg(\sum_n^N n q_{I,J,n} - X\bigg)^2=\sum_{既定のI,J,X}\bigg(\sum_{n_1}^N\sum_{n_2}^N n_1 n_2 q_{I,J,n_1}q_{I,J,n_2}- 2 X\sum_n^N n q_{I,J,n}\bigg)\\
+  f_{61} &=& \sum_{既定のI}\bigg(\sum_j^N X q_{I,j,X} - X\bigg)^2=\sum_{既定のI}X^2\bigg(\sum_{j_1}^N\sum_{j_2}^N q_{I,j_1,X}q_{I,j_2,X}- 2\sum_j^N q_{I,j,X}\bigg)\\
+  f_{62} &=& \sum_{既定のJ}\bigg(\sum_i^N X q_{i,J,X} - X\bigg)^2=\sum_{既定のJ}X^2\bigg(\sum_{i_1}^N\sum_{i_2}^N q_{i_1,J,X}q_{i_2,J,X}- 2\sum_i^N q_{i,J,X}\bigg)\\
+  f_{63} &=& \sum_{既定のI,Jセルが属するブロックの先頭I_0,J_0}\bigg(\sum_x^M\sum_y^M X q_{I_0+x-1,J_0+y-1,X} -X\bigg)^2\\
+  &=& \sum_{既定のI,Jセルが属するブロックの先頭I_0,J_0}X^2\bigg(\sum_{x_1}^M\sum_{y_1}^M q_{I_0
+  +..,j_0+..,X}\sum_{x_2}^M\sum_{y_2}^M q_{I_0+..,J_0
+  +..,X}-2\sum_x^M\sum_y^M q_{I_0+..,J_0+..,X}\bigg)
+\end{eqnarray*}
+
+ここで、$f_{6another} = f_{60} + f_{61} + f_{62} +f_{63}$とすることも考えられる。
+
+\begin{lstlisting}[language=Python]
+  def f60(self, I, J, X, L, Q):
+      N, _, _, idx = self.get_param()
+      for n1 in range(N):
+          Q[(idx[(I,J,n1)],idx[(I,J,n1)])] -= 2.0 * X * (n1 + 1) * L
+          for n2 in range(N):
+              Q[(idx[(I,J,n1)],idx[(I,J,n2)])] += (n1+1) * (n2+1) * L
+
+  def f61(self, I, J, X, L, Q):
+      N, _, _, idx = self.get_param()
+      for j1 in range(N):
+          Q[(idx[(I,j1,X-1)],idx[(I,j1,X-1)])] -= 2.0 * L
+          for j2 in range(N):
+              Q[(idx[(I,j1,X-1)],idx[(I,j2,X-1)])] += 1.0 * L
+
+  def f62(self, I, J, X, L, Q):
+      N, _, _, idx = self.get_param()
+      for i1 in range(N):
+          Q[(idx[(i1,J,X-1)],idx[(i1,J,X-1)])] -= 2.0 * L
+          for i2 in range(N):
+              Q[(idx[(i1,J,X-1)],idx[(i2,J,X-1)])] += 1.0 * L
+
+  def f63(self, I, J, X, L, Q):
+      N, M, _, idx = self.get_param()
+      I0, J0 = self.belongs(I, J)
+      for x1 in range(M):
+          for y1 in range(M):
+              Q[(idx[(I0+x1,J0+y1,X-1)],idx[(I0+x1,J0+y1,X-1)])] -= 2.0 * L
+              for x2 in range(M):
+                  for y2 in range(M):
+                      Q[(idx[(I0+x1,J0+y1,X-1)],idx[(I0+x2,J0+y2,X-1)])] += 1.0 * L
+
+  def f6_another(self, I, J, X, L, Q):
+      self.f60(I, J, X, L, Q)
+      self.f61(I, J, X, L, Q)
+      self.f62(I, J, X, L, Q)
+      self.f63(I, J, X, L, Q)
+      return Q
+\end{lstlisting}
+
+しかしながら、$f_{61}, f_{62, f_{63}}$は、行、列、ブロックのそれぞれの中では、数値の重複はないとする制約2及び制約3と同じであり、また、$f_{60}$についても、各セルの中で数値は1つだとする制約1と先の$f_6$の両者を指定しているなら、同じであると考えられることから、先に指定した$f_6$だけで十分だと考える。
 
 \subsection{評価関数：$f$}
 
@@ -548,36 +612,36 @@ $i, j, n$は、どれも$0$から始まるインデックス。
   f = \lambda_1\cdot f_1 + \lambda_2\cdot(f_2 + f_3) + \lambda_3\cdot(f_4 + f_5) + \lambda_4\cdot (\sum_{既定}f_6)
 \end{eqnarray*}
 
-制約の$f_1, f_2, f_3$が満たされると、制約$f_4, f_5$は自動的に満たされるので、制約$f_4, f_5$は$0<\lambda_3$の時だけ選択される様にした。
+制約の$f_1, f_2, f_3$が満たされると、制約$f_4, f_5$は自動的に満たされるので、制約$f_4, f_5$は$0<\lambda_3$の時だけの選択として、除外もできる様にした。
 
 \begin{lstlisting}[language=Python]
-  def f(self, lagrange1=1.0, lagrange2=1.0, lagrange3=1.0, lagrange4=1.0):
-    Q = defaultdict(lambda: 0)
-    _ = self.f1(lagrange1, Q)
-    _ = self.f2(lagrange2, Q)
-    _ = self.f3(lagrange2, Q)
-    if 0.0 < lagrange3:
-        _ = self.f4(lagrange3, Q)
-        _ = self.f5(lagrange3, Q)
-    for a in self.required:
-        IJX = a.split(',')
-        _ = self.f6(int(IJX[0]), int(IJX[1]), int(IJX[2]), lagrange4, Q)
-    return Q
+    def f(self, lagrange1=1.0, lagrange2=1.0, lagrange3=1.0, lagrange4=1.0):
+      Q = defaultdict(lambda: 0)
+      _ = self.f1(lagrange1, Q)
+      _ = self.f2(lagrange2, Q)
+      _ = self.f3(lagrange2, Q)
+      if 0.0 < lagrange3:
+          _ = self.f4(lagrange3, Q)
+          _ = self.f5(lagrange3, Q)
+      for a in self.required:
+          IJX = a.split(',')
+          _ = self.f6(int(IJX[0]), int(IJX[1]), int(IJX[2]), lagrange4, Q)
+      return Q
 
   def solv(self, Q, num_reads=1):
-    sampleset = self.sampler.sample_qubo(Q, num_reads=num_reads)
-    return sampleset
+      sampleset = self.sampler.sample_qubo(Q, num_reads=num_reads)
+      return sampleset
 
   def result(self, sampleset):
-    N, _, _, idx = self.get_param()
-    result = [i for i in sampleset.first[0].values()]
-    ans = [[None] * N for _ in range(N)]
-    for i in range(N):
-        for j in range(N):
-            for n in range(N):
-                if result[idx[(i,j,n)]] == 1:
-                    ans[i][j] = n+1
-    return ans
+      N, _, _, idx = self.get_param()
+      result = [i for i in sampleset.first[0].values()]
+      ans = [[None] * N for _ in range(N)]
+      for i in range(N):
+          for j in range(N):
+              for n in range(N):
+                  if result[idx[(i,j,n)]] == 1:
+                      ans[i][j] = n+1
+      return ans
 \end{lstlisting}
 
 \subsubsection{出力結果のチェック}
@@ -585,172 +649,186 @@ $i, j, n$は、どれも$0$から始まるインデックス。
 出力された結果を、ふるいにかける仕掛け
 
 \begin{lstlisting}[language=Python]
-  def evaluate(self, sampleset):
-    # Extract sample solutions, energies, and sort them by frequency
-    samples = sampleset.record['sample']
-    energies = sampleset.record['energy']
-    # Combine solutions and corresponding energies
-    sample_data = [(tuple(sample), energy) for sample, energy in zip(samples, energies)]
-    # Sort the results by appearance frequency and then energy
-    sample_frequency = Counter(sample for sample, _ in sample_data)
-    # Print sorted results by frequency and include energy
-    if self.debug:
-        print("\nSorted samples by frequency and energy:")
-        for solution, freq in sample_frequency.most_common():
-            energy = next(energy for sample, energy in sample_data if sample == solution)
-            print(f"Sample: {solution}, Frequency: {freq}, Energy: {energy:+.2f}")
-    return sample_data, sample_frequency
+    def evaluate(self, sampleset):
+      # Extract sample solutions, energies, and sort them by frequency
+      samples = sampleset.record['sample']
+      energies = sampleset.record['energy']
+      # Combine solutions and corresponding energies
+      sample_data = [(tuple(sample), energy) for sample, energy in zip(samples, energies)]
+      # Sort the results by appearance frequency and then energy
+      sample_frequency = Counter(sample for sample, _ in sample_data)
+      # Print sorted results by frequency and include energy
+      if self.debug:
+          print("\nSorted samples by frequency and energy:")
+          for solution, freq in sample_frequency.most_common():
+              energy = next(energy for sample, energy in sample_data if sample == solution)
+              print(f"Sample: {solution}, Frequency: {freq}, Energy: {energy:+.2f}")
+      return sample_data, sample_frequency
 
   def check1(self, a):
-    N, M, _, _ = self.get_param()
-    b = np.array(a).reshape(N*N, N)
-    # 各セルに数値は1つ？
-    for i in range(N*N):
-        s = 0
-        for n in range(N):
-            s += b[i][n]
-        if s != 1:
-            if self.debug: print(f'!: セルの中の数値が1つでない{i:3d}:{b[i]}')
-            return False
-    # 各ブロックに重複する数値はない？
-    i0j0 = self.block_ij()
-    for i0 in i0j0:
-        for j0 in i0j0:
-            ary = []
-            s = 0
-            for n in range(N):
-                for x in range(M):
-                    for y in range(M):
-                        bidx = (i0+x)*N + j0+y
-                        s += b[bidx][n]
-                        ary.append(b[bidx][n])
-                if s != 1:
-                    if self.debug: print(f'!: ブロック内で数値が重複:{np.array(ary)}')
-                    return False
-    #
-    for n in range(N):
-        # 各行に重複する数値はない？
-        for i in range(N):
-            ary = []
-            s = 0
-            for j in range(N):
-                bidx = i * N + j
-                s += b[bidx][n]
-                ary.append(b[bidx][n])
-            if s != 1:
-                if self.debug: print(f'!: 行で数値が重複:{np.array(ary)}')
-                return False
-        # 各列に重複する数値はない？
-        for j in range(N):
-            ary = []
-            s = 0
-            for i in range(N):
-                bidx = i * N + j
-                s += b[bidx][n]
-                ary.append(b[bidx][n])
-            if s != 1:
-                if self.debug: print(f'!: 列で数値が重複:{np.array(ary)}')
-                return False
-    #
-    return True
+      N, M, _, _ = self.get_param()
+      b = np.array(a).reshape(N*N, N)
+
+      # 既定値は正しい？
+      for a in self.required:
+          IJX = a.split(',')
+          i = int(IJX[0])*N + int(IJX[1])
+          n = int(IJX[2]) - 1
+          if b[i][n]!=1:
+              if self.debug: print(f'!: 既定値が違う:({IJX[0]},{IJX[1]}){IJX[2]}!={b[i]}')
+              return False
+
+      # 各セルに数値は1つ？
+      for i in range(N*N):
+          s = 0
+          for n in range(N):
+              s += b[i][n]
+          if s != 1:
+              if self.debug: print(f'!: セルの中の数値が1つでない{i:3d}:{b[i]}')
+              return False
+
+              # 各ブロックに重複する数値はない？
+      i0j0 = self.block_ij()
+      for i0 in i0j0:
+          for j0 in i0j0:
+              for n in range(N):
+                  ary = []
+                  s = 0
+                  for x in range(M):
+                      for y in range(M):
+                          bidx = (i0+x)*N + j0+y
+                          s += b[bidx][n]
+                          ary.append(b[bidx][n])
+                  if s != 1:
+                      if self.debug: print(f'!: ブロック内で数値が重複:{np.array(ary)}')
+                      return False
+      #
+      for n in range(N):
+          # 各行に重複する数値はない？
+          for i in range(N):
+              ary = []
+              s = 0
+              for j in range(N):
+                  bidx = i * N + j
+                  s += b[bidx][n]
+                  ary.append(b[bidx][n])
+              if s != 1:
+                  if self.debug: print(f'!: 行で数値が重複:{np.array(ary)}')
+                  return False
+          # 各列に重複する数値はない？
+          for j in range(N):
+              ary = []
+              s = 0
+              for i in range(N):
+                  bidx = i * N + j
+                  s += b[bidx][n]
+                  ary.append(b[bidx][n])
+              if s != 1:
+                  if self.debug: print(f'!: 列で数値が重複:{np.array(ary)}')
+                  return False
+      #
+      return True
 
   def check2(self, a):
-    N, M, S, _ = self.get_param()
-    b = np.array(a).reshape(N, N)
-    # 既定値は正しい？
-    for a in self.required:
-        IJX = a.split(',')
-        if b[int(IJX[0])][int(IJX[1])]!=int(IJX[2]):
-            if self.debug: print(f'!: 既定値が違う:({IJX[0]},{IJX[1]}){IJX[2]}!={b[int(IJX[0])][int(IJX[1])]}')
-            return False
-    # 各行の数値の和はS？
-    for i in range(N):
-        s = 0
-        for j in range(N):
-            s += b[i][j]
-        if s != S:
-            if self.debug: print(f'!: 行の総和＝{s}!={S}')
-            return False
-    # 各列の数値の和はS？
-    for j in range(N):
-        s = 0
-        for i in range(N):
-            s += b[i][j]
-        if s != S:
-            if self.debug: print(f'!: 列の総和＝{s}!={S}')
-            return False
-    # 各ブロックの数値の和はS？
-    i0j0 = self.block_ij()
-    for i in i0j0:
-        for j in i0j0:
-            s = 0
-            for x in range(M):
-                for y in range(M):
-                    #print(i+x,j+y)
-                    s += b[i+x][j+y]
-            if s != S:
-                if self.debug: print(f'!: ブロック内の総和＝{s}!={S}')
-                return False
-    #
-    return True
+      N, M, S, _ = self.get_param()
+      b = np.array(a).reshape(N, N)
+      '''
+      # 既定値は正しい？
+      for a in self.required:
+          IJX = a.split(',')
+          if b[int(IJX[0])][int(IJX[1])]!=int(IJX[2]):
+              if self.debug: print(f'!: 既定値が違う:({IJX[0]},{IJX[1]}){IJX[2]}!={b[int(IJX[0])][int(IJX[1])]}')
+              return False
+      '''
+      # 各行の数値の和はS？
+      for i in range(N):
+          s = 0
+          for j in range(N):
+              s += b[i][j]
+          if s != S:
+              if self.debug: print(f'!: 行の総和＝{s}!={S}')
+              return False
+      # 各列の数値の和はS？
+      for j in range(N):
+          s = 0
+          for i in range(N):
+              s += b[i][j]
+          if s != S:
+              if self.debug: print(f'!: 列の総和＝{s}!={S}')
+              return False
+      # 各ブロックの数値の和はS？
+      i0j0 = self.block_ij()
+      for i in i0j0:
+          for j in i0j0:
+              s = 0
+              for x in range(M):
+                  for y in range(M):
+                      #print(i+x,j+y)
+                      s += b[i+x][j+y]
+              if s != S:
+                  if self.debug: print(f'!: ブロック内の総和＝{s}!={S}')
+                  return False
+      #
+      return True
 
   def decode(self, a):
-    N, M, _, _ = self.get_param()
-    b = np.array(a).reshape(N**2, N)
-    mat = []
-    for v in b:
-        num = 0
-        for i, u in enumerate(v):
-            if u==1:
-                num = i+1
-        mat.append(num)
-    return mat
+      N, M, _, _ = self.get_param()
+      b = np.array(a).reshape(N**2, N)
+      mat = []
+      for v in b:
+          num = 0
+          for i, u in enumerate(v):
+              if u==1:
+                  num = i+1
+          mat.append(num)
+      return mat
 
   def print_shape(self):
-    for i in range(self.N):
-        print(f'{i}:', end='\t')
-        for j in range(self.N):
-            for a in self.required:
-                IJX = a.split(',')
-                if i==int(IJX[0]) and j==int(IJX[1]):
-                    print(int(IJX[2]), end=' ')
-                    break
-            else:
-                print('_', end=' ')
-        print()
+      for i in range(self.N):
+          print(f'{i}:', end='\t')
+          for j in range(self.N):
+              for a in self.required:
+                  IJX = a.split(',')
+                  if i==int(IJX[0]) and j==int(IJX[1]):
+                      print(int(IJX[2]), end=' ')
+                      break
+              else:
+                  print('_', end=' ')
+          print()
 \end{lstlisting}
 
 \subsection{main}
 
 \begin{lstlisting}[language=Python]
 if __name__ == '__main__':
-  KiteiF = 'dataA250429.txt'
-  M = 3
-  sudoku = NumberPlace(M, KiteiF)
-  sudoku.print_shape()
-  #lagrange1 = 40.0      # 数値に重複なし
-  #lagrange2 =  5.4      # 行、列、ブロック、で重複なし
-  #lagrange3 =  0.0      # 和はS
-  #lagrange4 =  5.1      # 既定セル
-  lagrange1 = 1.5        # 数値に重複なし
-  lagrange2 = 2.0        # 行、列、ブロック、で重複なし
-  lagrange3 = 0.0        # 和はS
-  lagrange4 = 2.0        # 既定セル
-  Q = sudoku.f(lagrange1, lagrange2, lagrange3, lagrange4)
-  num_reads = 100
-  sampleset = sudoku.solv(Q, num_reads)
-  ans = sudoku.result(sampleset)
-  print(*ans, sep='\n')
-  #
-  sudoku.debug = True
-  for sample in sampleset.record['sample']:
-      if sudoku.check1(sample):
-          if sudoku.debug: print('check1 Passed!')
-          a = sudoku.decode(sample)
-          if sudoku.check2(a):
-              if sudoku.debug: print('check2 Passed!')
-              print(np.array(a).reshape(M*M, M*M))
-              print()
+    KiteiF = 'dataA250429.txt'
+    M = 3
+    sudoku = NumberPlace(M, KiteiF)
+    sudoku.print_shape()
+    #lagrange1 = 40.0      # 数値に重複なし
+    #lagrange2 =  5.4      # 行、列、ブロック、で重複なし
+    #lagrange3 =  0.0      # 和はS
+    #lagrange4 =  5.1      # 既定セル
+    #lagrange1 = 90.0                 # 数値に重複なし
+    #lagrange2 = lagrange1 * 0.8      # 行、列、ブロック、で重複なし
+    #lagrange3 = -0.0                 # 和はS
+    #lagrange4 = lagrange1 * 3.0      # 既定セル
+    Q = sudoku.f(lagrange1, lagrange2, lagrange3, lagrange4)
+    num_reads = 100
+    sampleset = sudoku.solv(Q, num_reads)
+    ans = sudoku.result(sampleset)
+    print(*ans, sep='\n')
+    #
+    sudoku.debug = True
+    for sample in sampleset.record['sample']:
+        if sudoku.check1(sample):
+            #if sudoku.debug: print('check1 Passed!')
+            a = sudoku.decode(sample)
+            #if sudoku.check2(a):
+                #if sudoku.debug: print('check2 Passed!')
+            print(np.array(a).reshape(M*M, M*M))
+            print()
+            break
 \end{lstlisting}
 
 %\newpage
@@ -788,7 +866,7 @@ if __name__ == '__main__':
   [4, 3, 2, 1]
 \end{verbatim}
 
-何度かやっていると、辛うじて期待するものが出ることもあるが、、、
+何度かやっていると、辛うじて期待するものが出ることもある
 \begin{verbatim}
   [[3 1 4 2]
    [2 4 1 3]
@@ -796,14 +874,50 @@ if __name__ == '__main__':
    [4 2 3 1]]
 \end{verbatim}
 
-これで解けていると言えるのか？
+この時のパラメータは、
+\begin{verbatim}
+  #lagrange1 = 40.0      # 数値に重複なし
+  #lagrange2 =  5.4      # 行、列、ブロック、で重複なし
+  #lagrange3 =  0.0      # 和はS
+  #lagrange4 =  5.1      # 既定セル
+\end{verbatim}
 
 （lagrange1 〜 lagrange4 の値のバランスがデリケートだ）
 
 \subsubsection{→ 9x9 の場合}
 
-一度も解に至っていない
+dataA250429.txt が解けた
+\begin{verbatim}
+  0:	_ 6 _ 5 _ _ _ 4 _
+  1:	4 _ _ _ 9 _ 8 _ _
+  2:	3 _ 1 _ _ 6 _ 5 _
+  3:	_ 3 _ 7 _ _ _ _ 8
+  4:	_ _ 6 _ _ _ 9 _ _
+  5:	5 _ _ _ _ 4 _ 1 _
+  6:	_ 2 _ 4 _ _ 7 _ 3
+  7:	_ _ 9 _ 3 _ _ _ 1
+  8:	_ 8 _ _ _ 1 _ 2 _
 
+  [[9 6 8 5 2 3 1 4 7]
+   [4 5 2 1 9 7 8 3 6]
+   [3 7 1 8 4 6 2 5 9]
+   [2 3 4 7 1 9 5 6 8]
+   [8 1 6 3 5 2 9 7 4]
+   [5 9 7 6 8 4 3 1 2]
+   [1 2 5 4 6 8 7 9 3]
+   [7 4 9 2 3 5 6 8 1]
+   [6 8 3 9 7 1 4 2 5]]
+\end{verbatim}
+
+この時のパラメータは、
+\begin{verbatim}
+  #lagrange1 = 90.0               # 数値に重複なし
+  #lagrange2 = lagrange1 * 0.8    # 行、列、ブロック、で重複なし
+  #lagrange3 = -0.0               # 和はS
+  #lagrange4 = lagrange1 * 3.0    # 既定セル
+\end{verbatim}
+
+dataD250411.txt も解けた
 \begin{verbatim}
   0:	8 _ _ 2 _ _ _ 7 _
   1:	_ _ 1 _ 3 _ 5 _ _
@@ -815,35 +929,55 @@ if __name__ == '__main__':
   7:	_ _ 3 _ 1 _ 8 _ _
   8:	_ 2 _ _ _ 9 _ _ 6
 
-  [5, 4, 7, 1, 8, 9, 2, 6, 3]
-  [8, 3, 1, 6, 5, 2, 4, 7, 9]
-  [2, 9, 6, 7, 3, 4, 5, 1, 8]
-  [1, 8, 4, 5, 9, 6, 3, 2, 7]
-  [6, 5, 2, 4, 7, 3, 9, 8, 1]
-  [9, 7, 3, 8, 2, 1, 6, 4, 5]
-  [7, 2, 8, 9, 6, 5, 1, 3, 4]
-  [4, 6, 5, 3, 1, 7, 8, 9, 2]
-  [3, 1, 9, 2, 4, 8, 7, 5, 6]
+[[8 3 6 2 9 5 1 7 4]
+ [2 4 1 8 3 7 5 6 9]
+ [5 9 7 1 4 6 2 3 8]
+ [3 8 9 5 6 1 4 2 7]
+ [7 5 2 4 8 3 6 9 1]
+ [1 6 4 9 7 2 3 8 5]
+ [6 1 5 7 2 8 9 4 3]
+ [9 7 3 6 1 4 8 5 2]
+ [4 2 8 3 5 9 7 1 6]]
+\end{verbatim}
 
-  !: 列で数値が重複
-  !: セルの中の数値が1つでない  1:[1 0 0 0 1 0 0 0 0]
-  !: セルの中の数値が1つでない 42:[0 1 0 0 0 1 0 0 0]
-  !: セルの中の数値が1つでない  5:[0 1 0 0 0 0 1 0 0]
-  !: 列で数値が重複
-  !: 行で数値が重複
-  !: 行で数値が重複
-  check1 Passed!
-  !: 既定値が違う:(0, 0) 8!=6
-  !: 列で数値が重複
-  !: ブロック内で数値が重複:[0 0 0 0 0 0 0 0 0]
-  !: セルの中の数値が1つでない 65:[0 0 1 1 0 0 0 0 0]
-  !: ブロック内で数値が重複:[0 0 0 0 1 0 0 0 1]
-  !: セルの中の数値が1つでない 13:[0 0 0 1 1 0 0 0 0]
-  !: ブロック内で数値が重複:[0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0]
-  !: セルの中の数値が1つでない 65:[0 0 0 1 1 0 0 0 0]
-  !: ブロック内で数値が重複:[0 0 0 0 0 0 0 0 1 0 0 0 0 1 1 0 0 0]
-  !: ブロック内で数値が重複:[0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 1]
-  !: 行で数値が重複
+この時のパラメータは、
+\begin{verbatim}
+  lagrange1 = 90.0              # 数値に重複なし
+  lagrange2 = lagrange1 * 0.67  # 行、列、ブロック、で重複なし
+  lagrange3 = -0.0              # 和はS
+  lagrange4 = lagrange1 * 3     # 既定セル
+\end{verbatim}
+
+
+dataE250410.txt も解けた
+\begin{verbatim}
+0:	3 _ _ _ 4 _ 5 _ _
+1:	_ _ 1 6 _ _ _ 7 _
+2:	_ 6 _ _ _ _ _ _ 2
+3:	_ _ _ 9 _ _ 3 _ _
+4:	7 _ _ _ 5 _ _ _ 4
+5:	_ _ 8 _ _ 1 _ _ _
+6:	4 _ _ _ _ _ _ 1 _
+7:	_ 3 _ _ _ 6 8 _ _
+8:	_ _ 2 _ 7 _ _ _ 9
+
+[[3 2 7 1 4 8 5 9 6]
+ [9 5 1 6 2 3 4 7 8]
+ [8 6 4 7 9 5 1 3 2]
+ [2 4 5 9 6 7 3 8 1]
+ [7 1 3 8 5 2 9 6 4]
+ [6 9 8 4 3 1 7 2 5]
+ [4 7 6 5 8 9 2 1 3]
+ [5 3 9 2 1 6 8 4 7]
+ [1 8 2 3 7 4 6 5 9]]
+\end{verbatim}
+
+この時のパラメータは、
+\begin{verbatim}
+  lagrange1 = 90.0              # 数値に重複なし
+  lagrange2 = lagrange1 * 0.8   # 行、列、ブロック、で重複なし
+  lagrange3 = -0.0              # 和はS
+  lagrange4 = lagrange1 * 3.0   # 既定セル
 \end{verbatim}
 
 \section{プログラムの全体}

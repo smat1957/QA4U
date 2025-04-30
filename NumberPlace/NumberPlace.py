@@ -32,6 +32,17 @@ class NumberPlace:
             i0j0.append(self.M*i)
         return i0j0
 
+    def belongs(self, I, J):
+        i0j0 = self.block_ij()
+        I0 = 0
+        J0 = 0
+        for n in i0j0:
+            if n<=I<(n+3):
+                I0 = n
+            if n<=J<(n+3):
+                J0 = n
+        return I0, J0
+
     def sub1(self, i, j, L, Q):
         N, _, _, idx = self.get_param()
         for n1 in range(N):
@@ -138,6 +149,45 @@ class NumberPlace:
         _, _, _, idx = self.get_param()
         Q[(idx[(I, J, X-1)], idx[(I, J, X-1)])] -= L
         return Q
+    
+    def f60(self, I, J, X, L, Q):
+        N, _, _, idx = self.get_param()
+        for n1 in range(N):
+            Q[(idx[(I, J, n1)], idx[(I, J, n1)])] -= 2.0 * X * (n1 + 1) * L
+            for n2 in range(N):
+                Q[(idx[(I,J,n1)],idx[(I,J,n2)])] += (n1+1) * (n2+1) * L
+    
+    def f61(self, I, J, X, L, Q):
+        N, _, _, idx = self.get_param()
+        for j1 in range(N):
+            Q[(idx[(I, j1, X - 1)], idx[(I, j1, X - 1)])] -= 2.0 * L
+            for j2 in range(N):
+                Q[(idx[(I, j1, X-1)], idx[(I, j2, X-1)])] += 1.0 * L
+
+    def f62(self, I, J, X, L, Q):
+        N, _, _, idx = self.get_param()
+        for i1 in range(N):
+            Q[(idx[(i1, J, X - 1)], idx[(i1, J, X - 1)])] -= 2.0 * L
+            for i2 in range(N):
+                Q[(idx[(i1, J, X-1)], idx[(i2, J, X-1)])] += 1.0 * L
+
+    def f63(self, I, J, X, L, Q):
+        N, M, _, idx = self.get_param()
+        I0, J0 = self.belongs(I, J)
+        #print(f'debug: (I,J)=({I},{J})\t(I0,J0)=({I0},{J0})')
+        for x1 in range(M):
+            for y1 in range(M):
+                Q[(idx[(I0 + x1, J0 + y1, X - 1)], idx[(I0 + x1, J0 + y1, X - 1)])] -= 2.0 * L
+                for x2 in range(M):
+                    for y2 in range(M):
+                        Q[(idx[(I0+x1, J0+y1, X - 1)], idx[(I0+x2, J0+y2, X - 1)])] += 1.0 * L
+
+    def f6_another(self, I, J, X, L, Q):
+        self.f60(I, J, X, L, Q)
+        self.f61(I, J, X, L, Q)
+        self.f62(I, J, X, L, Q)
+        self.f63(I, J, X, L, Q)
+        return Q
 
     def f(self, lagrange1=1.0, lagrange2=1.0, lagrange3=1.0, lagrange4=1.0):
         Q = defaultdict(lambda: 0)
@@ -186,6 +236,18 @@ class NumberPlace:
     def check1(self, a):
         N, M, _, _ = self.get_param()
         b = np.array(a).reshape(N*N, N)
+        
+        # 既定値は正しい？
+        for a in self.required:
+            IJX = a.split(',')
+            i = int(IJX[0])*N + int(IJX[1])
+            n = int(IJX[2]) - 1
+            if b[i][n]!=1:
+                if self.debug: print(f'!: 既定値が違う:({IJX[0]},{IJX[1]}){IJX[2]}!={b[i]}')
+                self.err[2] += 1
+                flag = False
+                return flag
+
         # 各セルに数値は1つ？
         for i in range(N*N):
             s = 0
@@ -194,13 +256,14 @@ class NumberPlace:
             if s != 1:
                 if self.debug: print(f'!: セルの中の数値が1つでない{i:3d}:{b[i]}')
                 return False
+        
         # 各ブロックに重複する数値はない？
         i0j0 = self.block_ij()
         for i0 in i0j0:
             for j0 in i0j0:
-                ary = []
-                s = 0
                 for n in range(N):
+                    ary = []
+                    s = 0
                     for x in range(M):
                         for y in range(M):
                             bidx = (i0+x)*N + j0+y
@@ -239,12 +302,14 @@ class NumberPlace:
     def check2(self, a):
         N, M, S, _ = self.get_param()
         b = np.array(a).reshape(N, N)
+        '''
         # 既定値は正しい？
         for a in self.required:
             IJX = a.split(',')
             if b[int(IJX[0])][int(IJX[1])]!=int(IJX[2]):
                 if self.debug: print(f'!: 既定値が違う:({IJX[0]},{IJX[1]}){IJX[2]}!={b[int(IJX[0])][int(IJX[1])]}')
                 return False
+        '''
         # 各行の数値の和はS？
         for i in range(N):
             s = 0
@@ -310,10 +375,10 @@ if __name__ == '__main__':
     #lagrange2 =  5.4      # 行、列、ブロック、で重複なし
     #lagrange3 =  0.0      # 和はS
     #lagrange4 =  5.1      # 既定セル
-    lagrange1 = 1.0        # 数値に重複なし
-    lagrange2 = 1.0        # 行、列、ブロック、で重複なし
-    lagrange3 = 0.0        # 和はS
-    lagrange4 = 1.0        # 既定セル
+    #lagrange1 = 90.0                   # 数値に重複なし
+    #lagrange2 = lagrange1 * 0.8        # 行、列、ブロック、で重複なし
+    #lagrange3 = -0.0                   # 和はS
+    #lagrange4 = lagrange1 * 3.0        # 既定セル
     Q = sudoku.f(lagrange1, lagrange2, lagrange3, lagrange4)
     num_reads = 100
     sampleset = sudoku.solv(Q, num_reads)
@@ -323,9 +388,10 @@ if __name__ == '__main__':
     sudoku.debug = True
     for sample in sampleset.record['sample']:
         if sudoku.check1(sample):
-            if sudoku.debug: print('check1 Passed!')
+            #if sudoku.debug: print('check1 Passed!')
             a = sudoku.decode(sample)
-            if sudoku.check2(a):
-                if sudoku.debug: print('check2 Passed!')
-                print(np.array(a).reshape(M*M, M*M))
-                print()
+            #if sudoku.check2(a):
+            #if sudoku.debug: print('check2 Passed!')
+            print(np.array(a).reshape(M*M, M*M))
+            print()
+            break
