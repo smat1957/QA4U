@@ -809,12 +809,12 @@ if __name__ == '__main__':
     #lagrange2 =  5.4      # 行、列、ブロック、で重複なし
     #lagrange3 =  0.0      # 和はS
     #lagrange4 =  5.1      # 既定セル
-    #lagrange1 = 90.0                 # 数値に重複なし
-    #lagrange2 = lagrange1 * 0.8      # 行、列、ブロック、で重複なし
-    #lagrange3 = -0.0                 # 和はS
-    #lagrange4 = lagrange1 * 3.0      # 既定セル
+    lagrange1 = 90.0                 # 数値に重複なし
+    lagrange2 = lagrange1 * 0.8      # 行、列、ブロック、で重複なし
+    lagrange3 = -0.0                 # 和はS
+    lagrange4 = lagrange1 * 3.0      # 既定セル
     Q = sudoku.f(lagrange1, lagrange2, lagrange3, lagrange4)
-    num_reads = 100
+    num_reads = 1000
     sampleset = sudoku.solv(Q, num_reads)
     ans = sudoku.result(sampleset)
     print(*ans, sep='\n')

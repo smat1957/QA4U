@@ -244,9 +244,7 @@ class NumberPlace:
             n = int(IJX[2]) - 1
             if b[i][n]!=1:
                 if self.debug: print(f'!: 既定値が違う:({IJX[0]},{IJX[1]}){IJX[2]}!={b[i]}')
-                self.err[2] += 1
-                flag = False
-                return flag
+                return False
 
         # 各セルに数値は1つ？
         for i in range(N*N):
